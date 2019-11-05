@@ -27,6 +27,7 @@ public class BinanceStreamingExchange extends BinanceExchange implements Streami
 
     private static final Logger LOG = LoggerFactory.getLogger(BinanceStreamingExchange.class);
     private static final String API_BASE_URI = "wss://stream.binance.com:9443/";
+    private static final String API_BASE_URI_JE = "wss://stream.binance.je:9443/";
 
     private BinanceStreamingService streamingService;
     private BinanceUserDataStreamingService userDataStreamingService;
@@ -37,6 +38,7 @@ public class BinanceStreamingExchange extends BinanceExchange implements Streami
 
     private BinanceUserDataChannel userDataChannel;
     private Runnable onApiCall;
+    private boolean isJersey = false;
 
     @Override
     protected void initServices() {
@@ -44,7 +46,10 @@ public class BinanceStreamingExchange extends BinanceExchange implements Streami
         this.onApiCall = Events.onApiCall(exchangeSpecification);
     }
 
-    /**
+    public void setJersey(boolean jersey) {
+        isJersey = jersey;
+    }
+/**
      * Binance streaming API expects connections to multiple channels to be defined at connection time. To define the channels for this
      * connection pass a `ProductSubscription` in at connection time.
      *
@@ -161,7 +166,7 @@ public class BinanceStreamingExchange extends BinanceExchange implements Streami
     }
 
     private BinanceStreamingService createStreamingService(ProductSubscription subscription) {
-        String path = API_BASE_URI + "stream?streams=" + buildSubscriptionStreams(subscription);
+        String path = (isJersey ? API_BASE_URI_JE : API_BASE_URI) + "stream?streams=" + buildSubscriptionStreams(subscription);
         return new BinanceStreamingService(path, subscription);
     }
 
