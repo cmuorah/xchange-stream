@@ -60,16 +60,7 @@ public class BinanceStreamingExchange extends BinanceExchange implements Streami
     }
 
     @Override
-    public ExchangeSpecification getExchangeSpecification() {
-        return createSpec();
-    }
-
-    @Override
     public ExchangeSpecification getDefaultExchangeSpecification() {
-        return createSpec();
-    }
-
-    private ExchangeSpecification createSpec() {
         if(isJersey){
             ExchangeSpecification spec =  new ExchangeSpecification(this.getClass().getCanonicalName());
             spec.setSslUri("https://api.binance.je");
@@ -80,7 +71,7 @@ public class BinanceStreamingExchange extends BinanceExchange implements Streami
             AuthUtils.setApiAndSecretKey(spec, "binance");
             return spec;
         }
-        return super.getExchangeSpecification();
+        return super.getDefaultExchangeSpecification();
     }
 
     public void setJersey(boolean jersey) {
