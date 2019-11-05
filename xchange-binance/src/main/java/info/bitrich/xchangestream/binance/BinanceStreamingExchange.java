@@ -99,7 +99,7 @@ public class BinanceStreamingExchange extends BinanceExchange implements Streami
     }
 
     private Completable createAndConnectUserDataService(String listenKey) {
-        userDataStreamingService = BinanceUserDataStreamingService.create((isJersey ? API_BASE_URI_JE : API_BASE_URI),listenKey);
+        userDataStreamingService = BinanceUserDataStreamingService.create(listenKey);
         return userDataStreamingService.connect().doOnComplete(() -> {
             LOG.info("Connected to authenticated web socket");
             userDataChannel.onChangeListenKey(newListenKey -> {
