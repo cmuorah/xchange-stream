@@ -46,8 +46,8 @@ public class BinanceStreamingExchange extends BinanceExchange implements Streami
     protected void initServices() {
         if(isJersey){
             exchangeSpecification =  new ExchangeSpecification(this.getClass().getCanonicalName());
-            exchangeSpecification.setSslUri("https://api.binance.com");
-            exchangeSpecification.setHost("www.binance.com");
+            exchangeSpecification.setSslUri("https://api.binance.je");
+            exchangeSpecification.setHost("www.binance.je");
             exchangeSpecification.setPort(80);
             exchangeSpecification.setExchangeName("Binance Jersey");
             exchangeSpecification.setExchangeDescription("Binance Exchange Jersey.");
