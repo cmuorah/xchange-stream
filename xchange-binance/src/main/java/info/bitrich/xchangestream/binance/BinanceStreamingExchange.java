@@ -8,6 +8,8 @@ import info.bitrich.xchangestream.util.Events;
 import io.reactivex.Completable;
 import io.reactivex.Observable;
 
+import org.knowm.xchange.ExchangeSpecification;
+import org.knowm.xchange.utils.AuthUtils;
 import si.mazi.rescu.RestProxyFactory;
 
 import org.knowm.xchange.binance.BinanceAuthenticated;
@@ -42,6 +44,15 @@ public class BinanceStreamingExchange extends BinanceExchange implements Streami
 
     @Override
     protected void initServices() {
+        if(isJersey){
+            exchangeSpecification =  new ExchangeSpecification(this.getClass().getCanonicalName());
+            exchangeSpecification.setSslUri("https://api.binance.com");
+            exchangeSpecification.setHost("www.binance.com");
+            exchangeSpecification.setPort(80);
+            exchangeSpecification.setExchangeName("Binance Jersey");
+            exchangeSpecification.setExchangeDescription("Binance Exchange Jersey.");
+            AuthUtils.setApiAndSecretKey(exchangeSpecification, "binance");
+        }
         super.initServices();
         this.onApiCall = Events.onApiCall(exchangeSpecification);
     }
