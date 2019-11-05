@@ -52,6 +52,7 @@ public class BinanceStreamingExchange extends BinanceExchange implements Streami
             exchangeSpecification.setExchangeName("Binance Jersey");
             exchangeSpecification.setExchangeDescription("Binance Exchange Jersey.");
             AuthUtils.setApiAndSecretKey(exchangeSpecification, "binance");
+            super.applySpecification(exchangeSpecification);
         }
         super.initServices();
         this.onApiCall = Events.onApiCall(exchangeSpecification);
