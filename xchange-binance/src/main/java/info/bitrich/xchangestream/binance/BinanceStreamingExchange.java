@@ -4,12 +4,8 @@ import info.bitrich.xchangestream.binance.BinanceUserDataChannel.NoActiveChannel
 import info.bitrich.xchangestream.core.ProductSubscription;
 import info.bitrich.xchangestream.core.StreamingExchange;
 import info.bitrich.xchangestream.util.Events;
-
 import io.reactivex.Completable;
 import io.reactivex.Observable;
-
-import si.mazi.rescu.RestProxyFactory;
-
 import org.knowm.xchange.binance.BinanceAuthenticated;
 import org.knowm.xchange.binance.BinanceExchange;
 import org.knowm.xchange.binance.service.BinanceMarketDataService;
@@ -17,6 +13,7 @@ import org.knowm.xchange.currency.CurrencyPair;
 import org.knowm.xchange.service.BaseExchangeService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import si.mazi.rescu.RestProxyFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,6 +24,7 @@ public class BinanceStreamingExchange extends BinanceExchange implements Streami
 
     private static final Logger LOG = LoggerFactory.getLogger(BinanceStreamingExchange.class);
     private static final String API_BASE_URI = "wss://stream.binance.com:9443/";
+    private static final String JERSEY_API_BASE_URI = "wss://stream.binance.je:9443/";
 
     private BinanceStreamingService streamingService;
     private BinanceUserDataStreamingService userDataStreamingService;
@@ -37,6 +35,23 @@ public class BinanceStreamingExchange extends BinanceExchange implements Streami
 
     private BinanceUserDataChannel userDataChannel;
     private Runnable onApiCall;
+
+    public static String buildSubscriptionStreams(ProductSubscription subscription) {
+        return Stream.of(buildSubscriptionStrings(subscription.getTicker(), "ticker"),
+                buildSubscriptionStrings(subscription.getOrderBook(), "depth"),
+                buildSubscriptionStrings(subscription.getTrades(), "trade"))
+                .filter(s -> !s.isEmpty())
+                .collect(Collectors.joining("/"));
+    }
+
+    private static String buildSubscriptionStrings(List<CurrencyPair> currencyPairs, String subscriptionType) {
+        return subscriptionStrings(currencyPairs).map(s -> s + "@" + subscriptionType).collect(Collectors.joining("/"));
+    }
+
+    private static Stream<String> subscriptionStrings(List<CurrencyPair> currencyPairs) {
+        return currencyPairs.stream()
+                .map(pair -> String.join("", pair.toString().split("/")).toLowerCase());
+    }
 
     @Override
     protected void initServices() {
@@ -76,9 +91,10 @@ public class BinanceStreamingExchange extends BinanceExchange implements Streami
 
             LOG.info("Connecting to authenticated web socket");
             BinanceAuthenticated binance = RestProxyFactory.createProxy(
-                BinanceAuthenticated.class,
-                getExchangeSpecification().getSslUri(),
-                new BaseExchangeService<BinanceExchange>(this) {}.getClientConfig()
+                    BinanceAuthenticated.class,
+                    getExchangeSpecification().getSslUri(),
+                    new BaseExchangeService<BinanceExchange>(this) {
+                    }.getClientConfig()
             );
             userDataChannel = new BinanceUserDataChannel(binance, exchangeSpecification.getApiKey(), onApiCall);
             try {
@@ -93,23 +109,21 @@ public class BinanceStreamingExchange extends BinanceExchange implements Streami
         streamingTradeService = new BinanceStreamingTradeService(userDataStreamingService);
 
         return Completable.concat(completables)
-            .doOnComplete(() -> streamingMarketDataService.openSubscriptions(subscriptions))
-            .doOnComplete(() -> streamingAccountService.openSubscriptions())
-            .doOnComplete(() -> streamingTradeService.openSubscriptions());
+                .doOnComplete(() -> streamingMarketDataService.openSubscriptions(subscriptions))
+                .doOnComplete(() -> streamingAccountService.openSubscriptions())
+                .doOnComplete(() -> streamingTradeService.openSubscriptions());
     }
 
     private Completable createAndConnectUserDataService(String listenKey) {
-        userDataStreamingService = BinanceUserDataStreamingService.create(listenKey);
+        userDataStreamingService = BinanceUserDataStreamingService.create(getApiBaseUri(), listenKey);
         return userDataStreamingService.connect().doOnComplete(() -> {
             LOG.info("Connected to authenticated web socket");
-            userDataChannel.onChangeListenKey(newListenKey -> {
-                userDataStreamingService.disconnect().doOnComplete(() -> {
-                    createAndConnectUserDataService(newListenKey).doOnComplete(() -> {
-                        streamingAccountService.setUserDataStreamingService(userDataStreamingService);
-                        streamingTradeService.setUserDataStreamingService(userDataStreamingService);
-                    });
-                });
-            });
+            userDataChannel.onChangeListenKey(newListenKey -> userDataStreamingService.disconnect()
+                    .doOnComplete(() -> createAndConnectUserDataService(newListenKey)
+                            .doOnComplete(() -> {
+                                streamingAccountService.setUserDataStreamingService(userDataStreamingService);
+                                streamingTradeService.setUserDataStreamingService(userDataStreamingService);
+                            })));
         });
     }
 
@@ -132,7 +146,7 @@ public class BinanceStreamingExchange extends BinanceExchange implements Streami
 
     @Override
     public boolean isAlive() {
-        return streamingService!= null && streamingService.isSocketOpen();
+        return streamingService != null && streamingService.isSocketOpen();
     }
 
     @Override
@@ -161,29 +175,19 @@ public class BinanceStreamingExchange extends BinanceExchange implements Streami
     }
 
     private BinanceStreamingService createStreamingService(ProductSubscription subscription) {
-        String path = API_BASE_URI + "stream?streams=" + buildSubscriptionStreams(subscription);
+        String path = getApiBaseUri() + "stream?streams=" + buildSubscriptionStreams(subscription);
         return new BinanceStreamingService(path, subscription);
     }
 
-    public static String buildSubscriptionStreams(ProductSubscription subscription) {
-        return Stream.of(buildSubscriptionStrings(subscription.getTicker(), "ticker"),
-                buildSubscriptionStrings(subscription.getOrderBook(), "depth"),
-                buildSubscriptionStrings(subscription.getTrades(), "trade"))
-                    .filter(s -> !s.isEmpty())
-                    .collect(Collectors.joining("/"));
-    }
-
-    private static String buildSubscriptionStrings(List<CurrencyPair> currencyPairs, String subscriptionType) {
-        return subscriptionStrings(currencyPairs).map( s -> s + "@" + subscriptionType).collect(Collectors.joining("/"));
-    }
-
-    private static Stream<String> subscriptionStrings(List<CurrencyPair> currencyPairs) {
-        return currencyPairs.stream()
-                .map(pair -> String.join("", pair.toString().split("/")).toLowerCase());
+    private String getApiBaseUri() {
+        boolean isJersey = getExchangeSpecification().getSslUri().contains("binance.je");
+        return (isJersey ? JERSEY_API_BASE_URI : API_BASE_URI);
     }
 
     @Override
-    public void useCompressedMessages(boolean compressedMessages) { streamingService.useCompressedMessages(compressedMessages); }
+    public void useCompressedMessages(boolean compressedMessages) {
+        streamingService.useCompressedMessages(compressedMessages);
+    }
 
 }
 
