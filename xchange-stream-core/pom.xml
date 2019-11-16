@@ -23,8 +23,8 @@
         </dependency>
 
         <dependency>
-            <groupId>org.knowm.xchange</groupId>
-            <artifactId>xchange-core</artifactId>
+            <groupId>com.github.cmuorah</groupId>
+            <artifactId>XChange</artifactId>
             <version>${xchange.version}</version>
         </dependency>
     </dependencies>

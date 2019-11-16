@@ -10,8 +10,8 @@
     <artifactId>xchange-kraken</artifactId>
     <dependencies>
         <dependency>
-            <groupId>org.knowm.xchange</groupId>
-            <artifactId>xchange-kraken</artifactId>
+            <groupId>com.github.cmuorah</groupId>
+            <artifactId>XChange</artifactId>
             <version>${xchange.version}</version>
             <scope>compile</scope>
         </dependency>

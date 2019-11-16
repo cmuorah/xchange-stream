@@ -185,7 +185,7 @@ public class CoinbaseProWebSocketTransaction {
     }
 
     public CoinbaseProFill toCoinbaseProFill() {
-        boolean taker = userId != null && takerUserId != null && userId.equals(takerUserId);
+        boolean taker = userId != null && userId.equals(takerUserId);
         // buy/sell are flipped on the taker side.
         String useSide = side;
         if (taker && side != null) {
