@@ -1,16 +1,7 @@
 package info.bitrich.xchangestream.coinbasepro.dto;
 
-import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Map.Entry;
-import java.util.SortedMap;
-import java.util.TimeZone;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
+import com.fasterxml.jackson.annotation.JsonProperty;
+import info.bitrich.xchangestream.coinbasepro.CoinbaseProStreamingAdapters;
 import org.knowm.xchange.coinbasepro.dto.marketdata.CoinbaseProProductStats;
 import org.knowm.xchange.coinbasepro.dto.marketdata.CoinbaseProProductTicker;
 import org.knowm.xchange.coinbasepro.dto.marketdata.CoinbaseProTrade;
@@ -20,9 +11,12 @@ import org.knowm.xchange.dto.Order.OrderType;
 import org.knowm.xchange.dto.marketdata.OrderBook;
 import org.knowm.xchange.dto.trade.LimitOrder;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
-import info.bitrich.xchangestream.coinbasepro.CoinbaseProStreamingAdapters;
+import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Domain object mapping a CoinbasePro web socket message.
@@ -122,7 +116,7 @@ public class CoinbaseProWebSocketTransaction {
     }
 
     private List<LimitOrder> coinbaseProOrderBookChanges(String side, OrderType orderType, CurrencyPair currencyPair, String[][] changes, SortedMap<BigDecimal, BigDecimal> sideEntries,
-                                            int maxDepth) {
+                                                         int maxDepth) {
         if (changes.length == 0) {
             return Collections.emptyList();
         }
@@ -142,19 +136,19 @@ public class CoinbaseProWebSocketTransaction {
         }
 
         Stream<Entry<BigDecimal, BigDecimal>> stream = sideEntries.entrySet()
-              .stream()
-              .filter(level -> level.getValue().compareTo(BigDecimal.ZERO) != 0);
+                .stream()
+                .filter(level -> level.getValue().compareTo(BigDecimal.ZERO) != 0);
         if (maxDepth != 0) {
-          stream = stream.limit(maxDepth);
+            stream = stream.limit(maxDepth);
         }
         return stream.map(level -> new LimitOrder(
-              orderType,
-              level.getValue(),
-              currencyPair,
-              "0",
-              null,
-              level.getKey()))
-            .collect(Collectors.toList());
+                orderType,
+                level.getValue(),
+                currencyPair,
+                "0",
+                null,
+                level.getKey()))
+                .collect(Collectors.toList());
     }
 
     public OrderBook toOrderBook(SortedMap<BigDecimal, BigDecimal> bids, SortedMap<BigDecimal, BigDecimal> asks, int maxDepth, CurrencyPair currencyPair) {
@@ -295,24 +289,24 @@ public class CoinbaseProWebSocketTransaction {
     }
 
     public String getTakerUserId() {
-		return takerUserId;
-	}
+        return takerUserId;
+    }
 
-	public String getUserId() {
-		return userId;
-	}
+    public String getUserId() {
+        return userId;
+    }
 
-	public String getTakerProfileId() {
+    public String getTakerProfileId() {
         return takerProfileId;
-	}
+    }
 
-	public String getProfileId() {
-		return profileId;
+    public String getProfileId() {
+        return profileId;
     }
 
     @Override
     public String toString() {
-        final StringBuffer sb = new StringBuffer("CoinbaseProWebSocketTransaction{");
+        final StringBuilder sb = new StringBuilder("CoinbaseProWebSocketTransaction{");
         sb.append("type='").append(type).append('\'');
         sb.append(", orderId='").append(orderId).append('\'');
         sb.append(", orderType='").append(orderType).append('\'');
@@ -327,23 +321,23 @@ public class CoinbaseProWebSocketTransaction {
         sb.append(", low24h=").append(low24h);
         sb.append(", high24h=").append(high24h);
         sb.append(", side='").append(side).append('\'');
-        sb.append(", bids=").append(bids);
-        sb.append(", asks=").append(asks);
-        sb.append(", changes=").append(asks);
+        sb.append(", bids=").append(Arrays.deepToString(bids));
+        sb.append(", asks=").append(Arrays.deepToString(asks));
+        sb.append(", changes=").append(Arrays.deepToString(asks));
         sb.append(", clientOid='").append(clientOid).append('\'');
         sb.append(", productId='").append(productId).append('\'');
         sb.append(", sequence=").append(sequence);
         sb.append(", time='").append(time).append('\'');
         sb.append(", reason='").append(reason).append('\'');
         sb.append(", trade_id='").append(tradeId).append('\'');
-        if ( userId != null )
-        	sb.append(", userId='").append(userId).append('\'');
-        if ( profileId != null )
-        	sb.append(", profileId='").append(profileId).append('\'');
-        if ( takerUserId != null )
-        	sb.append(", takerUserId='").append(takerUserId).append('\'');
-        if ( takerProfileId != null )
-        	sb.append(", takerProfileId='").append(takerProfileId).append('\'');
+        if (userId != null)
+            sb.append(", userId='").append(userId).append('\'');
+        if (profileId != null)
+            sb.append(", profileId='").append(profileId).append('\'');
+        if (takerUserId != null)
+            sb.append(", takerUserId='").append(takerUserId).append('\'');
+        if (takerProfileId != null)
+            sb.append(", takerProfileId='").append(takerProfileId).append('\'');
         sb.append('}');
         return sb.toString();
     }

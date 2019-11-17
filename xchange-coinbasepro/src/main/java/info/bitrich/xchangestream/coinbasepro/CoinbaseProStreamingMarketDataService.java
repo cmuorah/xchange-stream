@@ -111,7 +111,7 @@ public class CoinbaseProStreamingMarketDataService implements StreamingMarketDat
         return getRawWebSocketTransactions(currencyPair, true)
                 .filter(message -> message.getType().equals(MATCH))
                 .filter((CoinbaseProWebSocketTransaction s) -> s.getUserId() == null)
-                .map((CoinbaseProWebSocketTransaction s) -> s.toCoinbaseProTrade())
+                .map(CoinbaseProWebSocketTransaction::toCoinbaseProTrade)
                 .map((CoinbaseProTrade t) -> adaptTrades(new CoinbaseProTrade[]{t}, currencyPair))
                 .map((Trades h) -> h.getTrades().get(0));
     }
