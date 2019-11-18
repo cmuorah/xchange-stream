@@ -1,7 +1,6 @@
 package info.bitrich.xchangestream.bitmex;
 
 import info.bitrich.xchangestream.bitmex.dto.BitmexExecution;
-import info.bitrich.xchangestream.core.StreamingExchange;
 import info.bitrich.xchangestream.core.StreamingExchangeFactory;
 import info.bitrich.xchangestream.util.LocalExchangeConfig;
 import info.bitrich.xchangestream.util.PropsLoader;
@@ -23,7 +22,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -37,13 +35,11 @@ import static org.knowm.xchange.bitmex.BitmexPrompt.PERPETUAL;
  * @author Nikita Belenkiy on 18/05/2018.
  */
 public class BitmexOrderIT {
-    private CurrencyPair xbtUsd = CurrencyPair.XBT_USD;
     private static final Logger LOG = LoggerFactory.getLogger(BitmexTest.class);
-
-    private static final BigDecimal priceShift = new BigDecimal("50");
-
-    private BigDecimal testAskPrice;
-    private BigDecimal testBidPrice;
+    private static final Double priceShift = new Double("50");
+    private CurrencyPair xbtUsd = CurrencyPair.XBT_USD;
+    private Double testAskPrice;
+    private Double testBidPrice;
 
     private BitmexTradeService tradeService;
     private BitmexStreamingExchange exchange;
@@ -66,8 +62,8 @@ public class BitmexOrderIT {
         OrderBook orderBook = marketDataService.getOrderBook(xbtUsd);
         List<LimitOrder> asks = orderBook.getAsks();
         // todo : for the streaming service best ask is at 0 pos
-        BigDecimal topPriceAsk = getPrice(asks, asks.size() - 1);
-        BigDecimal topPriceBid = getPrice(orderBook.getBids(), 0);
+        Double topPriceAsk = getPrice(asks, asks.size() - 1);
+        Double topPriceBid = getPrice(orderBook.getBids(), 0);
 
         LOG.info("Got best ask = {}, best bid = {}", topPriceAsk, topPriceBid);
         Assert.assertTrue("Got empty order book", topPriceAsk != null || topPriceBid != null);
@@ -83,7 +79,7 @@ public class BitmexOrderIT {
         exchange.disconnect().blockingAwait();
     }
 
-    private BigDecimal getPrice(List<LimitOrder> side, int pos) {
+    private Double getPrice(List<LimitOrder> side, int pos) {
         if (!side.isEmpty()) {
             return side.get(pos).getLimitPrice();
         }
@@ -94,11 +90,11 @@ public class BitmexOrderIT {
         return System.currentTimeMillis() + "";
     }
 
-    private String placeLimitOrder(String clOrdId, BigDecimal price, String size, Order.OrderType type) throws Exception {
+    private String placeLimitOrder(String clOrdId, Double price, String size, Order.OrderType type) throws Exception {
         LimitOrder limitOrder =
                 new LimitOrder(
                         type,
-                        new BigDecimal(size),
+                        new Double(size),
                         xbtUsd,
                         clOrdId,
                         new Date(),
@@ -118,7 +114,7 @@ public class BitmexOrderIT {
         return order;
     }
 
-    private void checkPrivateOrder(String orderId, BigDecimal price, String size, BitmexSide side,
+    private void checkPrivateOrder(String orderId, Double price, String size, BitmexSide side,
                                    BitmexPrivateOrder bitmexPrivateOrder) {
         Assert.assertEquals(orderId, bitmexPrivateOrder.getId());
         Assert.assertEquals(price, bitmexPrivateOrder.getPrice());
@@ -150,7 +146,7 @@ public class BitmexOrderIT {
 
         final String replaceId = clOrdId + "replace";
         BitmexReplaceOrderParameters params = new BitmexReplaceOrderParameters.Builder()
-                .setOrderQuantity(new BigDecimal("5"))
+                .setOrderQuantity(new Double("5"))
                 .setOrderId(orderId)
                 .setOrigClOrdId(clOrdId)
                 .setClOrdId(replaceId)
@@ -181,7 +177,7 @@ public class BitmexOrderIT {
     public void shouldFillPlacedOrder() throws Exception {
         final String clOrdId = generateOrderId();
         String orderId = placeLimitOrder(clOrdId,
-                testBidPrice.add(priceShift.multiply(new BigDecimal("2"))),
+                testBidPrice + (priceShift * 2d),
                 "10", Order.OrderType.BID);
         Assert.assertNotNull(orderId);
 
@@ -199,9 +195,7 @@ public class BitmexOrderIT {
         ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
         scheduler.schedule(() -> {
             try {
-                placeLimitOrder(clOrdId,
-                        testBidPrice.add(priceShift.multiply(new BigDecimal("2"))),
-                        "10", Order.OrderType.BID);
+                placeLimitOrder(clOrdId, testBidPrice + (priceShift * 2d), "10", Order.OrderType.BID);
             } catch (Exception e) {
                 LOG.error(e.getMessage(), e);
             }

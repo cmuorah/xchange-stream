@@ -1,20 +1,16 @@
 package info.bitrich.xchangestream.bitfinex;
 
 import com.fasterxml.jackson.databind.JsonNode;
-
 import info.bitrich.xchangestream.bitfinex.dto.BitfinexWebSocketAuthBalance;
 import info.bitrich.xchangestream.bitfinex.dto.BitfinexWebSocketAuthOrder;
 import info.bitrich.xchangestream.bitfinex.dto.BitfinexWebSocketAuthPreTrade;
 import info.bitrich.xchangestream.bitfinex.dto.BitfinexWebSocketAuthTrade;
-
 import io.reactivex.annotations.Nullable;
-
 import org.knowm.xchange.bitfinex.service.BitfinexAdapters;
 import org.knowm.xchange.bitfinex.v1.BitfinexOrderType;
 import org.knowm.xchange.bitfinex.v1.dto.trade.BitfinexOrderStatusResponse;
 import org.knowm.xchange.currency.Currency;
 import org.knowm.xchange.dto.Order;
-import org.knowm.xchange.dto.Order.OrderType;
 import org.knowm.xchange.dto.account.Balance;
 import org.knowm.xchange.dto.trade.OpenOrders;
 import org.knowm.xchange.dto.trade.UserTrade;
@@ -22,7 +18,6 @@ import org.knowm.xchange.utils.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.math.BigDecimal;
 import java.util.stream.Stream;
 
 import static java.util.stream.StreamSupport.stream;
@@ -33,7 +28,7 @@ class BitfinexStreamingAdapters {
 
     private static final Logger LOG = LoggerFactory.getLogger(BitfinexStreamingAdapters.class);
 
-    private static final BigDecimal THOUSAND = new BigDecimal(1000);
+    private static final Double THOUSAND = 1000d;
 
 
     @Nullable
@@ -46,10 +41,10 @@ class BitfinexStreamingAdapters {
         String pair = preTrade.get(1).textValue();
         long mtsCreate = preTrade.get(2).longValue();
         long orderId = preTrade.get(3).longValue();
-        BigDecimal execAmount = preTrade.get(4).decimalValue();
-        BigDecimal execPrice = preTrade.get(5).decimalValue();
+        Double execAmount = preTrade.get(4).doubleValue();
+        Double execPrice = preTrade.get(5).doubleValue();
         String orderType = preTrade.get(6).textValue();
-        BigDecimal orderPrice = preTrade.get(7).decimalValue();
+        Double orderPrice = preTrade.get(7).doubleValue();
         int maker = preTrade.get(8).intValue();
         BitfinexWebSocketAuthPreTrade preTradeObject = new BitfinexWebSocketAuthPreTrade(id, pair, mtsCreate, orderId,
                 execAmount, execPrice, orderType, orderPrice, maker);
@@ -67,12 +62,12 @@ class BitfinexStreamingAdapters {
         String pair = trade.get(1).textValue();
         long mtsCreate = trade.get(2).longValue();
         long orderId = trade.get(3).longValue();
-        BigDecimal execAmount = trade.get(4).decimalValue();
-        BigDecimal execPrice = trade.get(5).decimalValue();
+        Double execAmount = trade.get(4).doubleValue();
+        Double execPrice = trade.get(5).doubleValue();
         String orderType = trade.get(6).textValue();
-        BigDecimal orderPrice = trade.get(7).decimalValue();
+        Double orderPrice = trade.get(7).doubleValue();
         int maker = trade.get(8).intValue();
-        BigDecimal fee = trade.get(9).decimalValue();
+        Double fee = trade.get(9).doubleValue();
         String currency = trade.get(10).textValue();
         BitfinexWebSocketAuthTrade tradeObject = new BitfinexWebSocketAuthTrade(
                 id, pair, mtsCreate, orderId, execAmount, execPrice, orderType, orderPrice, maker, fee, currency
@@ -82,7 +77,7 @@ class BitfinexStreamingAdapters {
     }
 
     static Stream<BitfinexWebSocketAuthOrder> adaptOrders(JsonNode orders) {
-        Iterable<JsonNode> iterator = () -> orders.iterator();
+        Iterable<JsonNode> iterator = orders::iterator;
         return stream(iterator.spliterator(), false)
                 .filter(o -> o.size() >= 32)
                 .map(BitfinexStreamingAdapters::createOrderObject)
@@ -110,7 +105,7 @@ class BitfinexStreamingAdapters {
     }
 
     static Stream<BitfinexWebSocketAuthBalance> adaptBalances(JsonNode balances) {
-        Iterable<JsonNode> iterator = () -> balances.iterator();
+        Iterable<JsonNode> iterator = balances::iterator;
         return stream(iterator.spliterator(), false)
                 .filter(o -> o.size() >= 5)
                 .map(BitfinexStreamingAdapters::createBalanceObject)
@@ -126,9 +121,9 @@ class BitfinexStreamingAdapters {
 
         String walletType = balance.get(0).textValue();
         String currency = balance.get(1).textValue();
-        BigDecimal balanceValue = balance.get(2).decimalValue();
-        BigDecimal unsettledInterest = balance.get(3).decimalValue();
-        BigDecimal balanceAvailable = balance.get(4).asText().equals("null") ? null : balance.get(4).decimalValue();
+        Double balanceValue = balance.get(2).doubleValue();
+        Double unsettledInterest = balance.get(3).doubleValue();
+        Double balanceAvailable = balance.get(4).asText().equals("null") ? null : balance.get(4).doubleValue();
 
         return new BitfinexWebSocketAuthBalance(walletType, currency, balanceValue, unsettledInterest, balanceAvailable);
     }
@@ -146,16 +141,16 @@ class BitfinexStreamingAdapters {
         String symbol = order.get(3).textValue();
         long mtsCreate = order.get(4).longValue();
         long mtsUpdate = order.get(5).longValue();
-        BigDecimal amount = order.get(6).decimalValue();
-        BigDecimal amountOrig = order.get(7).decimalValue();
+        Double amount = order.get(6).doubleValue();
+        Double amountOrig = order.get(7).doubleValue();
         String type = order.get(8).textValue();
         String typePrev = order.get(9).textValue();
         int flags = order.get(12).intValue();
         String orderStatus = order.get(13).textValue();
-        BigDecimal price = order.get(16).decimalValue();
-        BigDecimal priceAvg = order.get(17).decimalValue();
-        BigDecimal priceTrailing = order.get(18).decimalValue();
-        BigDecimal priceAuxLimit = order.get(19).decimalValue();
+        Double price = order.get(16).doubleValue();
+        Double priceAvg = order.get(17).doubleValue();
+        Double priceTrailing = order.get(18).doubleValue();
+        Double priceAuxLimit = order.get(19).doubleValue();
         long placedId = order.get(25).longValue();
 
         return new BitfinexWebSocketAuthOrder(
@@ -166,18 +161,29 @@ class BitfinexStreamingAdapters {
     }
 
     private static BitfinexOrderType adaptV2OrderTypeToV1(String orderType) {
-        switch(orderType) {
-            case "LIMIT": return BitfinexOrderType.MARGIN_LIMIT;
-            case "MARKET": return BitfinexOrderType.MARGIN_MARKET;
-            case "STOP": return BitfinexOrderType.MARGIN_STOP;
-            case "TRAILING STOP": return BitfinexOrderType.MARGIN_TRAILING_STOP;
-            case "EXCHANGE MARKET": return BitfinexOrderType.MARKET;
-            case "EXCHANGE LIMIT": return BitfinexOrderType.LIMIT;
-            case "EXCHANGE STOP": return BitfinexOrderType.STOP;
-            case "EXCHANGE TRAILING STOP": return BitfinexOrderType.TRAILING_STOP;
-            case "FOK": return BitfinexOrderType.MARGIN_FILL_OR_KILL;
-            case "EXCHANGE FOK": return BitfinexOrderType.FILL_OR_KILL;
-            default: return BitfinexOrderType.LIMIT; // Safe fallback
+        switch (orderType) {
+            case "LIMIT":
+                return BitfinexOrderType.MARGIN_LIMIT;
+            case "MARKET":
+                return BitfinexOrderType.MARGIN_MARKET;
+            case "STOP":
+                return BitfinexOrderType.MARGIN_STOP;
+            case "TRAILING STOP":
+                return BitfinexOrderType.MARGIN_TRAILING_STOP;
+            case "EXCHANGE MARKET":
+                return BitfinexOrderType.MARKET;
+            case "EXCHANGE LIMIT":
+                return BitfinexOrderType.LIMIT;
+            case "EXCHANGE STOP":
+                return BitfinexOrderType.STOP;
+            case "EXCHANGE TRAILING STOP":
+                return BitfinexOrderType.TRAILING_STOP;
+            case "FOK":
+                return BitfinexOrderType.MARGIN_FILL_OR_KILL;
+            case "EXCHANGE FOK":
+                return BitfinexOrderType.FILL_OR_KILL;
+            default:
+                return BitfinexOrderType.LIMIT; // Safe fallback
         }
     }
 
@@ -191,28 +197,28 @@ class BitfinexStreamingAdapters {
      * limit orders, stop orders, market orders etc.
      */
     private static BitfinexOrderStatusResponse adaptOrderToRestResponse(BitfinexWebSocketAuthOrder authOrder) {
-        int signum = authOrder.getAmountOrig().signum();
+        int signum = (int) Math.signum(authOrder.getAmountOrig());
         return new BitfinexOrderStatusResponse(
-            authOrder.getId(),
-            adaptV2SymbolToV1(authOrder.getSymbol()),
-            authOrder.getPrice(),
-            authOrder.getPriceAvg(),
-            signum > 0 ? "buy" : "sell",
-            adaptV2OrderTypeToV1(authOrder.getType()).getValue(),
-            new BigDecimal(authOrder.getMtsCreate()).divide(THOUSAND),
-            "ACTIVE".equals(authOrder.getOrderStatus()),
-            "CANCELED".equals(authOrder.getOrderStatus()),
-            false, //wasForced,
-            signum >= 0 ? authOrder.getAmountOrig() : authOrder.getAmountOrig().negate(),
-            signum >= 0 ? authOrder.getAmount() : authOrder.getAmount().negate(),
-            signum >= 0
-                ? authOrder.getAmountOrig().subtract(authOrder.getAmount())
-                : authOrder.getAmountOrig().subtract(authOrder.getAmount()).negate()
+                authOrder.getId(),
+                adaptV2SymbolToV1(authOrder.getSymbol()),
+                authOrder.getPrice(),
+                authOrder.getPriceAvg(),
+                signum > 0 ? "buy" : "sell",
+                adaptV2OrderTypeToV1(authOrder.getType()).getValue(),
+                (double) authOrder.getMtsCreate() / (THOUSAND),
+                "ACTIVE".equals(authOrder.getOrderStatus()),
+                "CANCELED".equals(authOrder.getOrderStatus()),
+                false, //wasForced,
+                signum >= 0 ? authOrder.getAmountOrig() : -authOrder.getAmountOrig(),
+                signum >= 0 ? authOrder.getAmount() : -authOrder.getAmount(),
+                signum >= 0
+                        ? authOrder.getAmountOrig() - (authOrder.getAmount())
+                        : -(authOrder.getAmountOrig() - (authOrder.getAmount()))
         );
     }
 
     static Order adaptOrder(BitfinexWebSocketAuthOrder authOrder) {
-        BitfinexOrderStatusResponse[] orderStatus = { adaptOrderToRestResponse(authOrder)};
+        BitfinexOrderStatusResponse[] orderStatus = {adaptOrderToRestResponse(authOrder)};
         OpenOrders orders = BitfinexAdapters.adaptOrders(orderStatus);
         if (orders.getOpenOrders().isEmpty()) {
             if (orders.getHiddenOrders().isEmpty()) {
@@ -225,23 +231,23 @@ class BitfinexStreamingAdapters {
 
     static UserTrade adaptUserTrade(BitfinexWebSocketAuthTrade authTrade) {
         return new UserTrade.Builder()
-            .currencyPair(BitfinexAdapters.adaptCurrencyPair(adaptV2SymbolToV1(authTrade.getPair())))
-            .feeAmount(authTrade.getFee().abs())
-            .feeCurrency(Currency.getInstance(authTrade.getFeeCurrency()))
-            .id(Long.toString(authTrade.getId()))
-            .orderId(Long.toString(authTrade.getOrderId()))
-            .originalAmount(authTrade.getExecAmount().abs())
-            .price(authTrade.getExecPrice())
-            .timestamp(DateUtils.fromMillisUtc(authTrade.getMtsCreate()))
-            .type(authTrade.getExecAmount().signum() == 1 ? BID : ASK)
-            .build();
+                .currencyPair(BitfinexAdapters.adaptCurrencyPair(adaptV2SymbolToV1(authTrade.getPair())))
+                .feeAmount(Math.abs(authTrade.getFee()))
+                .feeCurrency(Currency.getInstance(authTrade.getFeeCurrency()))
+                .id(Long.toString(authTrade.getId()))
+                .orderId(Long.toString(authTrade.getOrderId()))
+                .originalAmount(Math.abs(authTrade.getExecAmount()))
+                .price(authTrade.getExecPrice())
+                .timestamp(DateUtils.fromMillisUtc(authTrade.getMtsCreate()))
+                .type(Math.signum(authTrade.getExecAmount()) > 0.0 ? BID : ASK)
+                .build();
     }
 
     static Balance adaptBalance(BitfinexWebSocketAuthBalance authBalance) {
         return new Balance(
-            Currency.getInstance(authBalance.getCurrency()),
-            authBalance.getBalance(),
-            authBalance.getBalanceAvailable()
+                Currency.getInstance(authBalance.getCurrency()),
+                authBalance.getBalance(),
+                authBalance.getBalanceAvailable()
         );
     }
 }

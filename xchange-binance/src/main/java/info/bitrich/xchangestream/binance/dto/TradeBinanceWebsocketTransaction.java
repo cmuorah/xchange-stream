@@ -2,7 +2,6 @@ package info.bitrich.xchangestream.binance.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.math.BigDecimal;
 
 public class TradeBinanceWebsocketTransaction extends ProductBinanceWebSocketTransaction {
 
@@ -13,8 +12,8 @@ public class TradeBinanceWebsocketTransaction extends ProductBinanceWebSocketTra
             @JsonProperty("E") String eventTime,
             @JsonProperty("s") String symbol,
             @JsonProperty("t") long tradeId,
-            @JsonProperty("p") BigDecimal price,
-            @JsonProperty("q") BigDecimal quantity,
+            @JsonProperty("p") Double price,
+            @JsonProperty("q") Double quantity,
             @JsonProperty("b") long buyerOrderId,
             @JsonProperty("a") long sellerOrderId,
             @JsonProperty("T") long timestamp,

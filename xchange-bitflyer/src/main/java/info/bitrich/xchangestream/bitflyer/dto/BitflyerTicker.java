@@ -5,7 +5,6 @@ import org.knowm.xchange.currency.Currency;
 import org.knowm.xchange.currency.CurrencyPair;
 import org.knowm.xchange.dto.marketdata.Ticker;
 
-import java.math.BigDecimal;
 
 /**
  * Created by Lukas Zaoralek on 15.11.17.
@@ -13,28 +12,28 @@ import java.math.BigDecimal;
 public class BitflyerTicker extends BitflyerMarketEvent {
     private final String productCode;
     private final String tickId;
-    private final BigDecimal bestBid;
-    private final BigDecimal bestAsk;
-    private final BigDecimal bestBidSize;
-    private final BigDecimal bestAskSize;
-    private final BigDecimal totalBidDepth;
-    private final BigDecimal totalAskDepth;
+    private final Double bestBid;
+    private final Double bestAsk;
+    private final Double bestBidSize;
+    private final Double bestAskSize;
+    private final Double totalBidDepth;
+    private final Double totalAskDepth;
     private final String ltp;
-    private final BigDecimal volume;
-    private final BigDecimal volumeByProduct;
+    private final Double volume;
+    private final Double volumeByProduct;
 
     public BitflyerTicker(@JsonProperty("product_code") String productCode,
                           @JsonProperty("timestamp") String timestamp,
                           @JsonProperty("tick_id") String tickId,
-                          @JsonProperty("best_bid") BigDecimal bestBid,
-                          @JsonProperty("best_ask") BigDecimal bestAsk,
-                          @JsonProperty("best_bid_size") BigDecimal bestBidSize,
-                          @JsonProperty("best_ask_size") BigDecimal bestAskSize,
-                          @JsonProperty("total_bid_depth") BigDecimal totalBidDepth,
-                          @JsonProperty("total_ask_depth") BigDecimal totalAskDepth,
+                          @JsonProperty("best_bid") Double bestBid,
+                          @JsonProperty("best_ask") Double bestAsk,
+                          @JsonProperty("best_bid_size") Double bestBidSize,
+                          @JsonProperty("best_ask_size") Double bestAskSize,
+                          @JsonProperty("total_bid_depth") Double totalBidDepth,
+                          @JsonProperty("total_ask_depth") Double totalAskDepth,
                           @JsonProperty("ltp") String ltp,
-                          @JsonProperty("volume") BigDecimal volume,
-                          @JsonProperty("volume_by_product") BigDecimal volumeByProduct) {
+                          @JsonProperty("volume") Double volume,
+                          @JsonProperty("volume_by_product") Double volumeByProduct) {
         super(timestamp);
         this.productCode = productCode;
         this.tickId = tickId;
@@ -57,27 +56,27 @@ public class BitflyerTicker extends BitflyerMarketEvent {
         return tickId;
     }
 
-    public BigDecimal getBestBid() {
+    public Double getBestBid() {
         return bestBid;
     }
 
-    public BigDecimal getBestAsk() {
+    public Double getBestAsk() {
         return bestAsk;
     }
 
-    public BigDecimal getBestBidSize() {
+    public Double getBestBidSize() {
         return bestBidSize;
     }
 
-    public BigDecimal getBestAskSize() {
+    public Double getBestAskSize() {
         return bestAskSize;
     }
 
-    public BigDecimal getTotalBidDepth() {
+    public Double getTotalBidDepth() {
         return totalBidDepth;
     }
 
-    public BigDecimal getTotalAskDepth() {
+    public Double getTotalAskDepth() {
         return totalAskDepth;
     }
 
@@ -85,11 +84,11 @@ public class BitflyerTicker extends BitflyerMarketEvent {
         return ltp;
     }
 
-    public BigDecimal getVolume() {
+    public Double getVolume() {
         return volume;
     }
 
-    public BigDecimal getVolumeByProduct() {
+    public Double getVolumeByProduct() {
         return volumeByProduct;
     }
 

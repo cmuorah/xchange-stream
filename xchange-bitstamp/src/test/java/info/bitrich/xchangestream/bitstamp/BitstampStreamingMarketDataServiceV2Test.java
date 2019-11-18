@@ -16,7 +16,6 @@ import org.knowm.xchange.exceptions.NotAvailableFromExchangeException;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -36,20 +35,20 @@ public class BitstampStreamingMarketDataServiceV2Test extends BitstampStreamingM
         marketDataService = new BitstampStreamingMarketDataService(streamingService);
     }
 
-    public void testOrderbookCommon(String channelName, Supplier<TestObserver<OrderBook>> updater) throws Exception {
+    private void testOrderbookCommon(String channelName, Supplier<TestObserver<OrderBook>> updater) throws Exception {
         // Given order book in JSON
         JsonNode orderBook = mapper.readTree(this.getClass().getResource("/order-book-v2.json"));
 
         when(streamingService.subscribeChannel(eq(channelName), eq("data"))).thenReturn(Observable.just(orderBook));
 
         List<LimitOrder> bids = new ArrayList<>();
-        bids.add(new LimitOrder(Order.OrderType.BID, new BigDecimal("0.922"), CurrencyPair.BTC_EUR, "", null, new BigDecimal("819.9")));
-        bids.add(new LimitOrder(Order.OrderType.BID, new BigDecimal("0.085"), CurrencyPair.BTC_EUR, "", null, new BigDecimal("818.63")));
+        bids.add(new LimitOrder(Order.OrderType.BID, new Double("0.922"), CurrencyPair.BTC_EUR, "", null, new Double("819.9")));
+        bids.add(new LimitOrder(Order.OrderType.BID, new Double("0.085"), CurrencyPair.BTC_EUR, "", null, new Double("818.63")));
 
         List<LimitOrder> asks = new ArrayList<>();
-        asks.add(new LimitOrder(Order.OrderType.ASK, new BigDecimal("2.89"), CurrencyPair.BTC_EUR, "", null, new BigDecimal("821.7")));
-        asks.add(new LimitOrder(Order.OrderType.ASK, new BigDecimal("5.18"), CurrencyPair.BTC_EUR, "", null, new BigDecimal("821.65")));
-        asks.add(new LimitOrder(Order.OrderType.ASK, new BigDecimal("0.035"), CurrencyPair.BTC_EUR, "", null, new BigDecimal("821.6")));
+        asks.add(new LimitOrder(Order.OrderType.ASK, new Double("2.89"), CurrencyPair.BTC_EUR, "", null, new Double("821.7")));
+        asks.add(new LimitOrder(Order.OrderType.ASK, new Double("5.18"), CurrencyPair.BTC_EUR, "", null, new Double("821.65")));
+        asks.add(new LimitOrder(Order.OrderType.ASK, new Double("0.035"), CurrencyPair.BTC_EUR, "", null, new Double("821.6")));
 
         // Call get order book observable
         TestObserver<OrderBook> test = updater.get();
@@ -75,7 +74,7 @@ public class BitstampStreamingMarketDataServiceV2Test extends BitstampStreamingM
 
         when(streamingService.subscribeChannel(eq("live_trades_btcusd"), eq("trade"))).thenReturn(Observable.just(trade));
 
-        Trade expected = new Trade(Order.OrderType.ASK, new BigDecimal("34.390000000000001"), CurrencyPair.BTC_USD, new BigDecimal("914.38999999999999"), new Date(1484858423000L), "177827396");
+        Trade expected = new Trade(Order.OrderType.ASK, new Double("34.390000000000001"), CurrencyPair.BTC_USD, new Double("914.38999999999999"), new Date(1484858423000L), "177827396");
 
         // Call get order book observable
         TestObserver<Trade> test = marketDataService.getTrades(CurrencyPair.BTC_USD).test();

@@ -18,22 +18,18 @@ import org.knowm.xchange.poloniex.dto.marketdata.PoloniexMarketData;
 import org.knowm.xchange.poloniex.dto.marketdata.PoloniexPublicTrade;
 import org.knowm.xchange.poloniex.dto.marketdata.PoloniexTicker;
 
-import java.math.BigDecimal;
 import java.util.*;
 
 public class PoloniexStreamingMarketDataService implements StreamingMarketDataService {
+    private static final int ORDER_BOOK_LEVELS = 100;
     private final WampStreamingService streamingService;
-
+    Comparator<LimitOrder> asendingPriceComparator = Comparator.comparing(LimitOrder::getLimitPrice);
+    Comparator<LimitOrder> descendingPriceComparator = (LimitOrder o1, LimitOrder o2) -> -o1.getLimitPrice().compareTo(o2.getLimitPrice());
+    private Map<CurrencyPair, MinMaxPriorityQueue<LimitOrder>> orderBookBids = new HashMap<>();
+    private Map<CurrencyPair, MinMaxPriorityQueue<LimitOrder>> orderBookAsks = new HashMap<>();
     public PoloniexStreamingMarketDataService(WampStreamingService streamingService) {
         this.streamingService = streamingService;
     }
-
-    private Map<CurrencyPair, MinMaxPriorityQueue<LimitOrder>> orderBookBids = new HashMap<>();
-    private Map<CurrencyPair, MinMaxPriorityQueue<LimitOrder>> orderBookAsks = new HashMap<>();
-    private static final int ORDER_BOOK_LEVELS = 100;
-
-    Comparator<LimitOrder> asendingPriceComparator = (LimitOrder o1, LimitOrder o2) -> o1.getLimitPrice().compareTo(o2.getLimitPrice());
-    Comparator<LimitOrder> descendingPriceComparator = (LimitOrder o1, LimitOrder o2) -> -o1.getLimitPrice().compareTo(o2.getLimitPrice());
 
     @Override
     public Observable<OrderBook> getOrderBook(CurrencyPair currencyPair, Object... args) {
@@ -63,8 +59,8 @@ public class PoloniexStreamingMarketDataService implements StreamingMarketDataSe
                         if ("orderBookRemove".equals(type) || "orderBookModify".equals(type)) {
 
                             JsonNode data = item.get("data");
-                            BigDecimal rate = new BigDecimal(data.get("rate").asText());
-                            BigDecimal amount = data.has("amount") ? new BigDecimal(data.get("amount").asText()) : null;
+                            Double rate = Double.parseDouble(data.get("rate").asText());
+                            Double amount = data.has("amount") ? Double.parseDouble(data.get("amount").asText()) : null;
                             String bookType = data.get("type").asText();
                             if ("orderBookRemove".equals(type)) {
                                 if ("ask".equals(bookType)) {
@@ -73,7 +69,7 @@ public class PoloniexStreamingMarketDataService implements StreamingMarketDataSe
                                     bidQueue.removeIf(x -> rate.equals(x.getLimitPrice()));
                                 }
 
-                            } else if ("orderBookModify".equals(type)) {
+                            } else {
                                 if ("ask".equals(bookType)) {
                                     LimitOrder level = new LimitOrder(Order.OrderType.ASK, amount, currencyPair, null, now, rate);
                                     askQueue.add(level);
@@ -94,14 +90,14 @@ public class PoloniexStreamingMarketDataService implements StreamingMarketDataSe
         return streamingService.subscribeChannel("ticker")
                 .map(pubSubData -> {
                     PoloniexMarketData marketData = new PoloniexMarketData();
-                    marketData.setLast(new BigDecimal(pubSubData.arguments().get(1).asText()));
-                    marketData.setLowestAsk(new BigDecimal(pubSubData.arguments().get(2).asText()));
-                    marketData.setHighestBid(new BigDecimal(pubSubData.arguments().get(3).asText()));
-                    marketData.setPercentChange(new BigDecimal(pubSubData.arguments().get(4).asText()));
-                    marketData.setBaseVolume(new BigDecimal(pubSubData.arguments().get(5).asText()));
-                    marketData.setQuoteVolume(new BigDecimal(pubSubData.arguments().get(6).asText()));
-                    marketData.setHigh24hr(new BigDecimal(pubSubData.arguments().get(8).asText()));
-                    marketData.setLow24hr(new BigDecimal(pubSubData.arguments().get(9).asText()));
+                    marketData.setLast(Double.parseDouble(pubSubData.arguments().get(1).asText()));
+                    marketData.setLowestAsk(Double.parseDouble(pubSubData.arguments().get(2).asText()));
+                    marketData.setHighestBid(Double.parseDouble(pubSubData.arguments().get(3).asText()));
+                    marketData.setPercentChange(Double.parseDouble(pubSubData.arguments().get(4).asText()));
+                    marketData.setBaseVolume(Double.parseDouble(pubSubData.arguments().get(5).asText()));
+                    marketData.setQuoteVolume(Double.parseDouble(pubSubData.arguments().get(6).asText()));
+                    marketData.setHigh24hr(Double.parseDouble(pubSubData.arguments().get(8).asText()));
+                    marketData.setLow24hr(Double.parseDouble(pubSubData.arguments().get(9).asText()));
 
                     PoloniexTicker ticker = new PoloniexTicker(marketData, PoloniexUtils.toCurrencyPair(pubSubData.arguments().get(0).asText()));
                     return PoloniexAdapters.adaptPoloniexTicker(ticker, ticker.getCurrencyPair());
@@ -112,7 +108,7 @@ public class PoloniexStreamingMarketDataService implements StreamingMarketDataSe
     @Override
     public Observable<Trade> getTrades(CurrencyPair currencyPair, Object... args) {
         String channel = PoloniexUtils.toPairString(currencyPair);
-        Observable<Trade> result = streamingService.subscribeChannel(channel)
+        return streamingService.subscribeChannel(channel)
                 .flatMap(pubSubData -> {
                     List<Trade> res = new ArrayList<Trade>();
                     for (int i = 0; i < pubSubData.arguments().size(); i++) {
@@ -121,10 +117,10 @@ public class PoloniexStreamingMarketDataService implements StreamingMarketDataSe
                             JsonNode data = item.get("data");
                             PoloniexPublicTrade trade = new PoloniexPublicTrade();
                             trade.setTradeID(data.get("tradeID").asText());
-                            trade.setAmount(new BigDecimal(data.get("amount").asText("0")));
+                            trade.setAmount(Double.parseDouble(data.get("amount").asText("0")));
                             trade.setDate(data.get("date").asText());
-                            trade.setRate(new BigDecimal(data.get("rate").asText("0")));
-                            trade.setTotal(new BigDecimal(data.get("total").asText("0")));
+                            trade.setRate(Double.parseDouble(data.get("rate").asText("0")));
+                            trade.setTotal(Double.parseDouble(data.get("total").asText("0")));
                             trade.setType(data.get("type").asText());
 
                             res.add(PoloniexAdapters.adaptPoloniexPublicTrade(trade, currencyPair));
@@ -133,6 +129,5 @@ public class PoloniexStreamingMarketDataService implements StreamingMarketDataSe
                     }
                     return Observable.fromIterable(res);
                 });
-        return result;
     }
 }

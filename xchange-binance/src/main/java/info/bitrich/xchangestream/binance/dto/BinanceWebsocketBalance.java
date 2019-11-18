@@ -1,20 +1,16 @@
 package info.bitrich.xchangestream.binance.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-
 import org.knowm.xchange.currency.Currency;
 import org.knowm.xchange.dto.account.Balance;
-
-import java.math.BigDecimal;
 
 public final class BinanceWebsocketBalance {
 
     private final Currency currency;
-    private final BigDecimal free;
-    private final BigDecimal locked;
+    private final Double free;
+    private final Double locked;
 
-    public BinanceWebsocketBalance(@JsonProperty("a") String asset, @JsonProperty("f") BigDecimal free,
-            @JsonProperty("l") BigDecimal locked) {
+    public BinanceWebsocketBalance(@JsonProperty("a") String asset, @JsonProperty("f") Double free, @JsonProperty("l") Double locked) {
         this.currency = Currency.getInstance(asset);
         this.locked = locked;
         this.free = free;
@@ -24,15 +20,15 @@ public final class BinanceWebsocketBalance {
         return currency;
     }
 
-    public BigDecimal getTotal() {
-        return free.add(locked);
+    public Double getTotal() {
+        return free + locked;
     }
 
-    public BigDecimal getAvailable() {
+    public Double getAvailable() {
         return free;
     }
 
-    public BigDecimal getLocked() {
+    public Double getLocked() {
         return locked;
     }
 

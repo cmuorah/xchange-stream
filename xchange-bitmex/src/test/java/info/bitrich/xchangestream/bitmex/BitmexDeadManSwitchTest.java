@@ -15,8 +15,6 @@ import org.knowm.xchange.utils.CertHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.math.BigDecimal;
-
 import static org.knowm.xchange.bitmex.BitmexPrompt.PERPETUAL;
 
 /**
@@ -54,7 +52,7 @@ public class BitmexDeadManSwitchTest {
         BitmexMarketDataService marketDataService =
                 (BitmexMarketDataService) exchange.getMarketDataService();
 
-        BitmexTradeService tradeService = (BitmexTradeService)exchange.getTradeService();
+        BitmexTradeService tradeService = (BitmexTradeService) exchange.getTradeService();
 
         final BitmexStreamingMarketDataService streamingMarketDataService = (BitmexStreamingMarketDataService) exchange.getStreamingMarketDataService();
 //        streamingMarketDataService.authenticate();
@@ -72,15 +70,15 @@ public class BitmexDeadManSwitchTest {
 
         System.out.println("orderBook = " + orderBook);
 
-        streamingMarketDataService.enableDeadManSwitch(10000,30000);
+        streamingMarketDataService.enableDeadManSwitch(10000, 30000);
 
         String nosOrdId = System.currentTimeMillis() + "";
-        BigDecimal originalOrderSize = new BigDecimal("300");
-        //    BigDecimal price = new BigDecimal("10000");
-        BigDecimal price = orderBook.getBids().get(0).getLimitPrice().add(new BigDecimal("100"));
+        Double originalOrderSize = new Double("300");
+        //    Double price = new Double("10000");
+        Double price = orderBook.getBids().get(0).getLimitPrice() + 100d;
         LimitOrder limitOrder = new LimitOrder.Builder(Order.OrderType.ASK, CurrencyPair.XBT_USD).originalAmount(originalOrderSize).limitPrice(price).id(nosOrdId).build();
         String xbtusd = tradeService.placeLimitOrder(limitOrder);
-        logger.info("!!!!!PRIVATE_ORDER!!!! {}",xbtusd);
+        logger.info("!!!!!PRIVATE_ORDER!!!! {}", xbtusd);
         Thread.sleep(100000);
         System.out.println();
         System.out.println();

@@ -24,24 +24,24 @@ public class ExecutionReportBinanceUserTransaction extends ProductBinanceWebSock
     private final OrderSide side;
     private final OrderType orderType;
     private final TimeInForce timeInForce;
-    private final BigDecimal orderQuantity;
-    private final BigDecimal orderPrice;
-    private final BigDecimal stopPrice;
-    private final BigDecimal icebergQuantity;
+    private final Double orderQuantity;
+    private final Double orderPrice;
+    private final Double stopPrice;
+    private final Double icebergQuantity;
     private final ExecutionType executionType;
     private final OrderStatus currentOrderStatus;
     private final String orderRejectReason;
     private final long orderId;
-    private final BigDecimal lastExecutedQuantity;
-    private final BigDecimal cumulativeFilledQuantity;
-    private final BigDecimal lastExecutedPrice;
-    private final BigDecimal commissionAmount;
+    private final Double lastExecutedQuantity;
+    private final Double cumulativeFilledQuantity;
+    private final Double lastExecutedPrice;
+    private final Double commissionAmount;
     private final String commissionAsset;
     private final long timestamp;
     private final long tradeId;
     private final boolean working;
     private final boolean buyerMarketMaker;
-    private final BigDecimal cumulativeQuoteAssetTransactedQuantity;
+    private final Double cumulativeQuoteAssetTransactedQuantity;
 
 	public ExecutionReportBinanceUserTransaction(
             @JsonProperty("e") String eventType,
@@ -51,24 +51,24 @@ public class ExecutionReportBinanceUserTransaction extends ProductBinanceWebSock
             @JsonProperty("S") String side,
             @JsonProperty("o") String orderType,
             @JsonProperty("f") String timeInForce,
-            @JsonProperty("q") BigDecimal quantity,
-            @JsonProperty("p") BigDecimal price,
-            @JsonProperty("P") BigDecimal stopPrice,
-            @JsonProperty("F") BigDecimal icebergQuantity,
+            @JsonProperty("q") Double quantity,
+            @JsonProperty("p") Double price,
+            @JsonProperty("P") Double stopPrice,
+            @JsonProperty("F") Double icebergQuantity,
             @JsonProperty("x") String currentExecutionType,
             @JsonProperty("X") String currentOrderStatus,
             @JsonProperty("r") String orderRejectReason,
             @JsonProperty("i") long orderId,
-            @JsonProperty("l") BigDecimal lastExecutedQuantity,
-            @JsonProperty("z") BigDecimal cumulativeFilledQuantity,
-            @JsonProperty("L") BigDecimal lastExecutedPrice,
-            @JsonProperty("n") BigDecimal commissionAmount,
+            @JsonProperty("l") Double lastExecutedQuantity,
+            @JsonProperty("z") Double cumulativeFilledQuantity,
+            @JsonProperty("L") Double lastExecutedPrice,
+            @JsonProperty("n") Double commissionAmount,
             @JsonProperty("N") String commissionAsset,
             @JsonProperty("T") long timestamp,
             @JsonProperty("t") long tradeId,
             @JsonProperty("w") boolean working,
             @JsonProperty("m") boolean buyerMarketMaker,
-            @JsonProperty("Z") BigDecimal cumulativeQuoteAssetTransactedQuantity)
+            @JsonProperty("Z") Double cumulativeQuoteAssetTransactedQuantity)
     {
         super(eventType, eventTime, symbol);
         this.clientOrderId = clientOrderId;
@@ -111,19 +111,19 @@ public class ExecutionReportBinanceUserTransaction extends ProductBinanceWebSock
         return timeInForce;
     }
 
-    public BigDecimal getOrderQuantity() {
+    public Double getOrderQuantity() {
         return orderQuantity;
     }
 
-    public BigDecimal getOrderPrice() {
+    public Double getOrderPrice() {
         return orderPrice;
     }
 
-    public BigDecimal getStopPrice() {
+    public Double getStopPrice() {
         return stopPrice;
     }
 
-    public BigDecimal getIcebergQuantity() {
+    public Double getIcebergQuantity() {
         return icebergQuantity;
     }
 
@@ -143,19 +143,19 @@ public class ExecutionReportBinanceUserTransaction extends ProductBinanceWebSock
         return orderId;
     }
 
-    public BigDecimal getLastExecutedQuantity() {
+    public Double getLastExecutedQuantity() {
         return lastExecutedQuantity;
     }
 
-    public BigDecimal getCumulativeFilledQuantity() {
+    public Double getCumulativeFilledQuantity() {
         return cumulativeFilledQuantity;
     }
 
-    public BigDecimal getLastExecutedPrice() {
+    public Double getLastExecutedPrice() {
         return lastExecutedPrice;
     }
 
-    public BigDecimal getCommissionAmount() {
+    public Double getCommissionAmount() {
         return commissionAmount;
     }
 
@@ -179,7 +179,7 @@ public class ExecutionReportBinanceUserTransaction extends ProductBinanceWebSock
         return buyerMarketMaker;
     }
 
-    public BigDecimal getCumulativeQuoteAssetTransactedQuantity() {
+    public Double getCumulativeQuoteAssetTransactedQuantity() {
         return cumulativeQuoteAssetTransactedQuantity;
     }
 
@@ -214,7 +214,7 @@ public class ExecutionReportBinanceUserTransaction extends ProductBinanceWebSock
                orderType,
                side,
                stopPrice,
-               BigDecimal.ZERO,
+               0d,
                timestamp
            )
        );

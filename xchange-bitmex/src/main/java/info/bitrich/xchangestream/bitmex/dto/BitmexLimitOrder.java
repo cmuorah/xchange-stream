@@ -6,7 +6,6 @@ import org.knowm.xchange.currency.CurrencyPair;
 import org.knowm.xchange.dto.Order;
 import org.knowm.xchange.dto.trade.LimitOrder;
 
-import java.math.BigDecimal;
 
 /**
  * Created by Lukas Zaoralek on 13.11.17.
@@ -17,15 +16,15 @@ public class BitmexLimitOrder extends BitmexMarketDataEvent {
 
     protected final String id;
     protected final String side;
-    protected final BigDecimal price;
-    protected final BigDecimal size;
+    protected final Double price;
+    protected final Double size;
 
     @JsonCreator
     public BitmexLimitOrder(@JsonProperty("symbol") String symbol,
                             @JsonProperty("id") String id,
                             @JsonProperty("side") String side,
-                            @JsonProperty("price") BigDecimal price,
-                            @JsonProperty("size") BigDecimal size) {
+                            @JsonProperty("price") Double price,
+                            @JsonProperty("size") Double size) {
         super(symbol, null);
         this.id = id;
         this.side = side;
@@ -36,8 +35,8 @@ public class BitmexLimitOrder extends BitmexMarketDataEvent {
     public BitmexLimitOrder(String symbol,
                             String id,
                             String side,
-                            BigDecimal price,
-                            BigDecimal size,
+                            Double price,
+                            Double size,
                             String timestamp) {
         super(symbol, timestamp);
         this.id = id;
@@ -54,11 +53,11 @@ public class BitmexLimitOrder extends BitmexMarketDataEvent {
         return side;
     }
 
-    public BigDecimal getPrice() {
+    public Double getPrice() {
         return price;
     }
 
-    public BigDecimal getSize() {
+    public Double getSize() {
         return size;
     }
 

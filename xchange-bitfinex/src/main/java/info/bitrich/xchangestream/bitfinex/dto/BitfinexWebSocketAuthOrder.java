@@ -1,6 +1,5 @@
 package info.bitrich.xchangestream.bitfinex.dto;
 
-import java.math.BigDecimal;
 import java.util.Objects;
 
 public class BitfinexWebSocketAuthOrder {
@@ -10,20 +9,20 @@ public class BitfinexWebSocketAuthOrder {
     private String symbol;
     private long mtsCreate;
     private long mtsUpdate;
-    private BigDecimal amount;
-    private BigDecimal amountOrig;
+    private Double amount;
+    private Double amountOrig;
     private String type;
     private String typePrev;
     private String orderStatus;
-    private BigDecimal price;
-    private BigDecimal priceAvg;
-    private BigDecimal priceTrailing;
-    private BigDecimal priceAuxLimit;
+    private Double price;
+    private Double priceAvg;
+    private Double priceTrailing;
+    private Double priceAuxLimit;
     private long placedId;
     private int flags;
 
-    public BitfinexWebSocketAuthOrder(long id, long groupId, long cid, String symbol, long mtsCreate, long mtsUpdate, BigDecimal amount, BigDecimal amountOrig, String type, String typePrev,
-                                      String orderStatus, BigDecimal price, BigDecimal priceAvg, BigDecimal priceTrailing, BigDecimal priceAuxLimit, long placedId, int flags) {
+    public BitfinexWebSocketAuthOrder(long id, long groupId, long cid, String symbol, long mtsCreate, long mtsUpdate, Double amount, Double amountOrig, String type, String typePrev,
+                                      String orderStatus, Double price, Double priceAvg, Double priceTrailing, Double priceAuxLimit, long placedId, int flags) {
         this.id = id;
         this.groupId = groupId;
         this.cid = cid;
@@ -46,24 +45,24 @@ public class BitfinexWebSocketAuthOrder {
     @Override
     public String toString() {
         return "BitfinexWebSocketAuthenticatedOrder{" +
-            "id=" + id +
-            ", groupId=" + groupId +
-            ", cid=" + cid +
-            ", symbol='" + symbol + '\'' +
-            ", mtsCreate=" + mtsCreate +
-            ", mtsUpdate=" + mtsUpdate +
-            ", amount=" + amount +
-            ", amountOrig=" + amountOrig +
-            ", type='" + type + '\'' +
-            ", typePrev='" + typePrev + '\'' +
-            ", orderStatus='" + orderStatus + '\'' +
-            ", price=" + price +
-            ", priceAvg=" + priceAvg +
-            ", priceTrailing=" + priceTrailing +
-            ", priceAuxLimit=" + priceAuxLimit +
-            ", placedId=" + placedId +
-            ", flags=" + flags +
-            '}';
+                "id=" + id +
+                ", groupId=" + groupId +
+                ", cid=" + cid +
+                ", symbol='" + symbol + '\'' +
+                ", mtsCreate=" + mtsCreate +
+                ", mtsUpdate=" + mtsUpdate +
+                ", amount=" + amount +
+                ", amountOrig=" + amountOrig +
+                ", type='" + type + '\'' +
+                ", typePrev='" + typePrev + '\'' +
+                ", orderStatus='" + orderStatus + '\'' +
+                ", price=" + price +
+                ", priceAvg=" + priceAvg +
+                ", priceTrailing=" + priceTrailing +
+                ", priceAuxLimit=" + priceAuxLimit +
+                ", placedId=" + placedId +
+                ", flags=" + flags +
+                '}';
     }
 
     @Override
@@ -72,22 +71,22 @@ public class BitfinexWebSocketAuthOrder {
         if (!(o instanceof BitfinexWebSocketAuthOrder)) return false;
         BitfinexWebSocketAuthOrder that = (BitfinexWebSocketAuthOrder) o;
         return id == that.id &&
-            groupId == that.groupId &&
-            cid == that.cid &&
-            mtsCreate == that.mtsCreate &&
-            mtsUpdate == that.mtsUpdate &&
-            placedId == that.placedId &&
-            flags == that.flags &&
-            Objects.equals(symbol, that.symbol) &&
-            Objects.equals(amount, that.amount) &&
-            Objects.equals(amountOrig, that.amountOrig) &&
-            Objects.equals(type, that.type) &&
-            Objects.equals(typePrev, that.typePrev) &&
-            Objects.equals(orderStatus, that.orderStatus) &&
-            Objects.equals(price, that.price) &&
-            Objects.equals(priceAvg, that.priceAvg) &&
-            Objects.equals(priceTrailing, that.priceTrailing) &&
-            Objects.equals(priceAuxLimit, that.priceAuxLimit);
+                groupId == that.groupId &&
+                cid == that.cid &&
+                mtsCreate == that.mtsCreate &&
+                mtsUpdate == that.mtsUpdate &&
+                placedId == that.placedId &&
+                flags == that.flags &&
+                Objects.equals(symbol, that.symbol) &&
+                Objects.equals(amount, that.amount) &&
+                Objects.equals(amountOrig, that.amountOrig) &&
+                Objects.equals(type, that.type) &&
+                Objects.equals(typePrev, that.typePrev) &&
+                Objects.equals(orderStatus, that.orderStatus) &&
+                Objects.equals(price, that.price) &&
+                Objects.equals(priceAvg, that.priceAvg) &&
+                Objects.equals(priceTrailing, that.priceTrailing) &&
+                Objects.equals(priceAuxLimit, that.priceAuxLimit);
     }
 
     @Override
@@ -120,11 +119,11 @@ public class BitfinexWebSocketAuthOrder {
         return mtsUpdate;
     }
 
-    public BigDecimal getAmount() {
+    public Double getAmount() {
         return amount;
     }
 
-    public BigDecimal getAmountOrig() {
+    public Double getAmountOrig() {
         return amountOrig;
     }
 
@@ -140,19 +139,19 @@ public class BitfinexWebSocketAuthOrder {
         return orderStatus;
     }
 
-    public BigDecimal getPrice() {
+    public Double getPrice() {
         return price;
     }
 
-    public BigDecimal getPriceAvg() {
+    public Double getPriceAvg() {
         return priceAvg;
     }
 
-    public BigDecimal getPriceTrailing() {
+    public Double getPriceTrailing() {
         return priceTrailing;
     }
 
-    public BigDecimal getPriceAuxLimit() {
+    public Double getPriceAuxLimit() {
         return priceAuxLimit;
     }
 

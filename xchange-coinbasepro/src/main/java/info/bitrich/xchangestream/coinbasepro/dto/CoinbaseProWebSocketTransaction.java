@@ -11,7 +11,6 @@ import org.knowm.xchange.dto.Order.OrderType;
 import org.knowm.xchange.dto.marketdata.OrderBook;
 import org.knowm.xchange.dto.trade.LimitOrder;
 
-import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.Map.Entry;
@@ -25,16 +24,16 @@ public class CoinbaseProWebSocketTransaction {
     private final String type;
     private final String orderId;
     private final String orderType;
-    private final BigDecimal size;
-    private final BigDecimal remainingSize;
-    private final BigDecimal price;
-    private final BigDecimal bestBid;
-    private final BigDecimal bestAsk;
-    private final BigDecimal lastSize;
-    private final BigDecimal volume24h;
-    private final BigDecimal open24h;
-    private final BigDecimal low24h;
-    private final BigDecimal high24h;
+    private final Double size;
+    private final Double remainingSize;
+    private final Double price;
+    private final Double bestBid;
+    private final Double bestAsk;
+    private final Double lastSize;
+    private final Double volume24h;
+    private final Double open24h;
+    private final Double low24h;
+    private final Double high24h;
     private final String side;
     private final String[][] bids;
     private final String[][] asks;
@@ -57,16 +56,16 @@ public class CoinbaseProWebSocketTransaction {
             @JsonProperty("type") String type,
             @JsonProperty("order_id") String orderId,
             @JsonProperty("order_type") String orderType,
-            @JsonProperty("size") BigDecimal size,
-            @JsonProperty("remaining_size") BigDecimal remainingSize,
-            @JsonProperty("price") BigDecimal price,
-            @JsonProperty("best_bid") BigDecimal bestBid,
-            @JsonProperty("best_ask") BigDecimal bestAsk,
-            @JsonProperty("last_size") BigDecimal lastSize,
-            @JsonProperty("volume_24h") BigDecimal volume24h,
-            @JsonProperty("open_24h") BigDecimal open24h,
-            @JsonProperty("low_24h") BigDecimal low24h,
-            @JsonProperty("high_24h") BigDecimal high24h,
+            @JsonProperty("size") Double size,
+            @JsonProperty("remaining_size") Double remainingSize,
+            @JsonProperty("price") Double price,
+            @JsonProperty("best_bid") Double bestBid,
+            @JsonProperty("best_ask") Double bestAsk,
+            @JsonProperty("last_size") Double lastSize,
+            @JsonProperty("volume_24h") Double volume24h,
+            @JsonProperty("open_24h") Double open24h,
+            @JsonProperty("low_24h") Double low24h,
+            @JsonProperty("high_24h") Double high24h,
             @JsonProperty("side") String side,
             @JsonProperty("bids") String[][] bids,
             @JsonProperty("asks") String[][] asks,
@@ -115,7 +114,7 @@ public class CoinbaseProWebSocketTransaction {
         this.profileId = profileId;
     }
 
-    private List<LimitOrder> coinbaseProOrderBookChanges(String side, OrderType orderType, CurrencyPair currencyPair, String[][] changes, SortedMap<BigDecimal, BigDecimal> sideEntries,
+    private List<LimitOrder> coinbaseProOrderBookChanges(String side, OrderType orderType, CurrencyPair currencyPair, String[][] changes, SortedMap<Double, Double> sideEntries,
                                                          int maxDepth) {
         if (changes.length == 0) {
             return Collections.emptyList();
@@ -130,14 +129,14 @@ public class CoinbaseProWebSocketTransaction {
                 continue;
             }
 
-            BigDecimal price = new BigDecimal(level[level.length - 2]);
-            BigDecimal volume = new BigDecimal(level[level.length - 1]);
+            Double price = new Double(level[level.length - 2]);
+            Double volume = new Double(level[level.length - 1]);
             sideEntries.put(price, volume);
         }
 
-        Stream<Entry<BigDecimal, BigDecimal>> stream = sideEntries.entrySet()
+        Stream<Entry<Double, Double>> stream = sideEntries.entrySet()
                 .stream()
-                .filter(level -> level.getValue().compareTo(BigDecimal.ZERO) != 0);
+                .filter(level -> level.getValue().compareTo(0d) != 0);
         if (maxDepth != 0) {
             stream = stream.limit(maxDepth);
         }
@@ -151,7 +150,7 @@ public class CoinbaseProWebSocketTransaction {
                 .collect(Collectors.toList());
     }
 
-    public OrderBook toOrderBook(SortedMap<BigDecimal, BigDecimal> bids, SortedMap<BigDecimal, BigDecimal> asks, int maxDepth, CurrencyPair currencyPair) {
+    public OrderBook toOrderBook(SortedMap<Double, Double> bids, SortedMap<Double, Double> asks, int maxDepth, CurrencyPair currencyPair) {
         // For efficiency, we go straight to XChange format
         List<LimitOrder> gdaxOrderBookBids = coinbaseProOrderBookChanges("buy", OrderType.BID, currencyPair, changes != null ? changes : this.bids,
                 bids, maxDepth);
@@ -204,39 +203,39 @@ public class CoinbaseProWebSocketTransaction {
         return orderType;
     }
 
-    public BigDecimal getSize() {
+    public Double getSize() {
         return size;
     }
 
-    public BigDecimal getPrice() {
+    public Double getPrice() {
         return price;
     }
 
-    public BigDecimal getBestBid() {
+    public Double getBestBid() {
         return bestBid;
     }
 
-    public BigDecimal getBestAsk() {
+    public Double getBestAsk() {
         return bestAsk;
     }
 
-    public BigDecimal getLastSize() {
+    public Double getLastSize() {
         return lastSize;
     }
 
-    public BigDecimal getVolume24h() {
+    public Double getVolume24h() {
         return volume24h;
     }
 
-    public BigDecimal getOpen24h() {
+    public Double getOpen24h() {
         return open24h;
     }
 
-    public BigDecimal getLow24h() {
+    public Double getLow24h() {
         return low24h;
     }
 
-    public BigDecimal getHigh24h() {
+    public Double getHigh24h() {
         return high24h;
     }
 
@@ -260,7 +259,7 @@ public class CoinbaseProWebSocketTransaction {
         return time;
     }
 
-    public BigDecimal getRemainingSize() {
+    public Double getRemainingSize() {
         return remainingSize;
     }
 

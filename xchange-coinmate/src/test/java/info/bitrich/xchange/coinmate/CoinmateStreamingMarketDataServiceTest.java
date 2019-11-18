@@ -14,7 +14,6 @@ import org.knowm.xchange.exceptions.NotAvailableFromExchangeException;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -44,13 +43,13 @@ public class CoinmateStreamingMarketDataServiceTest {
         when(streamingService.subscribeChannel(eq("order_book-BTC_EUR"), eq("order_book"))).thenReturn(Observable.just(orderBook));
 
         List<LimitOrder> bids = new ArrayList<>();
-        bids.add(new LimitOrder(Order.OrderType.BID, new BigDecimal("2.48345723"), CurrencyPair.BTC_EUR, null, null, new BigDecimal("852.8")));
-        bids.add(new LimitOrder(Order.OrderType.BID, new BigDecimal("0.50521505"), CurrencyPair.BTC_EUR, null, null, new BigDecimal("850.37")));
+        bids.add(new LimitOrder(Order.OrderType.BID, new Double("2.48345723"), CurrencyPair.BTC_EUR, null, null, new Double("852.8")));
+        bids.add(new LimitOrder(Order.OrderType.BID, new Double("0.50521505"), CurrencyPair.BTC_EUR, null, null, new Double("850.37")));
 
         List<LimitOrder> asks = new ArrayList<>();
-        asks.add(new LimitOrder(Order.OrderType.ASK, new BigDecimal("0.04"), CurrencyPair.BTC_EUR, null, null, new BigDecimal("853.35")));
-        asks.add(new LimitOrder(Order.OrderType.ASK, new BigDecimal("11.89247706"), CurrencyPair.BTC_EUR, null, null, new BigDecimal("854.5")));
-        asks.add(new LimitOrder(Order.OrderType.ASK, new BigDecimal("0.38478732"), CurrencyPair.BTC_EUR, null, null, new BigDecimal("855.48")));
+        asks.add(new LimitOrder(Order.OrderType.ASK, new Double("0.04"), CurrencyPair.BTC_EUR, null, null, new Double("853.35")));
+        asks.add(new LimitOrder(Order.OrderType.ASK, new Double("11.89247706"), CurrencyPair.BTC_EUR, null, null, new Double("854.5")));
+        asks.add(new LimitOrder(Order.OrderType.ASK, new Double("0.38478732"), CurrencyPair.BTC_EUR, null, null, new Double("855.48")));
 
         // Call get order book observable
         TestObserver<OrderBook> test = marketDataService.getOrderBook(CurrencyPair.BTC_EUR).test();
@@ -71,8 +70,8 @@ public class CoinmateStreamingMarketDataServiceTest {
 
         when(streamingService.subscribeChannel(eq("trades-BTC_CZK"), eq("new_trades"))).thenReturn(Observable.just(trade));
 
-        Trade expected1 = new Trade(null, new BigDecimal("0.08233888"), CurrencyPair.BTC_CZK, new BigDecimal("855.29"), new Date(1484863030522L), null);
-        Trade expected2 = new Trade(null, new BigDecimal("0.00200428"), CurrencyPair.BTC_CZK, new BigDecimal("855.13"), new Date(1484863028887L), null);
+        Trade expected1 = new Trade(null, new Double("0.08233888"), CurrencyPair.BTC_CZK, new Double("855.29"), new Date(1484863030522L), null);
+        Trade expected2 = new Trade(null, new Double("0.00200428"), CurrencyPair.BTC_CZK, new Double("855.13"), new Date(1484863028887L), null);
 
         TestObserver<Trade> test = marketDataService.getTrades(CurrencyPair.BTC_CZK).test();
 

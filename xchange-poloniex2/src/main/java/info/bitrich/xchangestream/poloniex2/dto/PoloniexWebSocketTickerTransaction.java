@@ -5,7 +5,6 @@ import org.knowm.xchange.currency.CurrencyPair;
 import org.knowm.xchange.poloniex.dto.marketdata.PoloniexMarketData;
 import org.knowm.xchange.poloniex.dto.marketdata.PoloniexTicker;
 
-import java.math.BigDecimal;
 
 /**
  * Created by Lukas Zaoralek on 11.11.17.
@@ -18,15 +17,15 @@ public class PoloniexWebSocketTickerTransaction {
 
     public PoloniexTicker toPoloniexTicker(CurrencyPair currencyPair) {
         PoloniexMarketData poloniexMarketData = new PoloniexMarketData();
-        BigDecimal last = new BigDecimal(ticker[1]);
-        BigDecimal lowestAsk = new BigDecimal(ticker[2]);
-        BigDecimal highestBid = new BigDecimal(ticker[3]);
-        BigDecimal percentChange = new BigDecimal(ticker[4]);
-        BigDecimal baseVolume = new BigDecimal(ticker[5]);
-        BigDecimal quoteVolume = new BigDecimal(ticker[6]);
-        BigDecimal isFrozen = new BigDecimal(ticker[7]);
-        BigDecimal high24hr = new BigDecimal(ticker[8]);
-        BigDecimal low24hr = new BigDecimal(ticker[9]);
+        Double last = Double.parseDouble(ticker[1]);
+        Double lowestAsk = Double.parseDouble(ticker[2]);
+        Double highestBid = Double.parseDouble(ticker[3]);
+        Double percentChange = Double.parseDouble(ticker[4]);
+        Double baseVolume = Double.parseDouble(ticker[5]);
+        Double quoteVolume = Double.parseDouble(ticker[6]);
+        Double isFrozen = Double.parseDouble(ticker[7]);
+        Double high24hr = Double.parseDouble(ticker[8]);
+        Double low24hr = Double.parseDouble(ticker[9]);
         poloniexMarketData.setLast(last);
         poloniexMarketData.setLowestAsk(lowestAsk);
         poloniexMarketData.setHighestBid(highestBid);

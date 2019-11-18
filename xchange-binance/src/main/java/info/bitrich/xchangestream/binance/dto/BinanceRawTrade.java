@@ -1,22 +1,21 @@
 package info.bitrich.xchangestream.binance.dto;
 
-import java.math.BigDecimal;
 
 public class BinanceRawTrade {
     private final String eventType;
     private final String eventTime;
     private final String symbol;
     private final long tradeId;
-    private final BigDecimal price;
-    private final BigDecimal quantity;
+    private final Double price;
+    private final Double quantity;
     private final long buyerOrderId;
     private final long sellerOrderId;
     private final long timestamp;
     private final boolean buyerMarketMaker;
     private final boolean ignore;
 
-    public BinanceRawTrade(String eventType, String eventTime, String symbol, long tradeId, BigDecimal price,
-                           BigDecimal quantity, long buyerOrderId, long sellerOrderId, long timestamp,
+    public BinanceRawTrade(String eventType, String eventTime, String symbol, long tradeId, Double price,
+                           Double quantity, long buyerOrderId, long sellerOrderId, long timestamp,
                            boolean buyerMarketMaker, boolean ignore) {
         this.eventType = eventType;
         this.eventTime = eventTime;
@@ -47,11 +46,11 @@ public class BinanceRawTrade {
         return tradeId;
     }
 
-    public BigDecimal getPrice() {
+    public Double getPrice() {
         return price;
     }
 
-    public BigDecimal getQuantity() {
+    public Double getQuantity() {
         return quantity;
     }
 

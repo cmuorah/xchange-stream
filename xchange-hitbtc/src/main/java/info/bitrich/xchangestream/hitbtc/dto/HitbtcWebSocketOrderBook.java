@@ -3,7 +3,6 @@ package info.bitrich.xchangestream.hitbtc.dto;
 import org.knowm.xchange.hitbtc.v2.dto.HitbtcOrderBook;
 import org.knowm.xchange.hitbtc.v2.dto.HitbtcOrderLimit;
 
-import java.math.BigDecimal;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -13,8 +12,8 @@ import static java.util.Collections.reverseOrder;
  * Created by Pavel Chertalev on 15.03.2018.
  */
 public class HitbtcWebSocketOrderBook {
-    private Map<BigDecimal, HitbtcOrderLimit> asks;
-    private Map<BigDecimal, HitbtcOrderLimit> bids;
+    private Map<Double, HitbtcOrderLimit> asks;
+    private Map<Double, HitbtcOrderLimit> bids;
     private long sequence = 0;
 
     public HitbtcWebSocketOrderBook(HitbtcWebSocketOrderBookTransaction orderbookTransaction) {
@@ -22,17 +21,17 @@ public class HitbtcWebSocketOrderBook {
     }
 
     private void createFromLevels(HitbtcWebSocketOrderBookTransaction orderbookTransaction) {
-        this.asks = new TreeMap<>(BigDecimal::compareTo);
-        this.bids = new TreeMap<>(reverseOrder(BigDecimal::compareTo));
+        this.asks = new TreeMap<>(Double::compareTo);
+        this.bids = new TreeMap<>(reverseOrder(Double::compareTo));
 
         for (HitbtcOrderLimit orderBookItem : orderbookTransaction.getParams().getAsk()) {
-            if (orderBookItem.getSize().signum() != 0) {
+            if (orderBookItem.getSize() != 0) {
                 asks.put(orderBookItem.getPrice(), orderBookItem);
             }
         }
 
         for (HitbtcOrderLimit orderBookItem : orderbookTransaction.getParams().getBid()) {
-            if (orderBookItem.getSize().signum() != 0) {
+            if (orderBookItem.getSize() != 0) {
                 bids.put(orderBookItem.getPrice(), orderBookItem);
             }
         }
@@ -61,10 +60,10 @@ public class HitbtcWebSocketOrderBook {
         sequence = orderBookTransaction.getParams().getSequence();
     }
 
-    private void updateOrderBookItems(HitbtcOrderLimit[] itemsToUpdate, Map<BigDecimal, HitbtcOrderLimit> localItems) {
+    private void updateOrderBookItems(HitbtcOrderLimit[] itemsToUpdate, Map<Double, HitbtcOrderLimit> localItems) {
         for (HitbtcOrderLimit itemToUpdate : itemsToUpdate) {
             localItems.remove(itemToUpdate.getPrice());
-            if (itemToUpdate.getSize().signum() != 0) {
+            if (itemToUpdate.getSize() != 0) {
                 localItems.put(itemToUpdate.getPrice(), itemToUpdate);
             }
         }

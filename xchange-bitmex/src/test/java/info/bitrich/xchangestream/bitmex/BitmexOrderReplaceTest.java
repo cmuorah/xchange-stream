@@ -7,7 +7,6 @@ import org.knowm.xchange.ExchangeFactory;
 import org.knowm.xchange.ExchangeSpecification;
 import org.knowm.xchange.bitmex.dto.marketdata.BitmexPrivateOrder;
 import org.knowm.xchange.bitmex.dto.trade.BitmexReplaceOrderParameters;
-import org.knowm.xchange.bitmex.dto.trade.BitmexSide;
 import org.knowm.xchange.bitmex.service.BitmexMarketDataService;
 import org.knowm.xchange.bitmex.service.BitmexTradeService;
 import org.knowm.xchange.currency.CurrencyPair;
@@ -18,7 +17,6 @@ import org.knowm.xchange.utils.CertHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 import static org.knowm.xchange.bitmex.BitmexPrompt.PERPETUAL;
@@ -58,7 +56,7 @@ public class BitmexOrderReplaceTest {
         BitmexMarketDataService marketDataService =
                 (BitmexMarketDataService) exchange.getMarketDataService();
 
-        BitmexTradeService tradeService = (BitmexTradeService)exchange.getTradeService();
+        BitmexTradeService tradeService = (BitmexTradeService) exchange.getTradeService();
 
         final BitmexStreamingMarketDataService streamingMarketDataService = (BitmexStreamingMarketDataService) exchange.getStreamingMarketDataService();
 //        streamingMarketDataService.authenticate();
@@ -76,12 +74,12 @@ public class BitmexOrderReplaceTest {
         System.out.println("orderBook = " + orderBook);
 
         String nosOrdId = System.currentTimeMillis() + "";
-        BigDecimal originalOrderSize = new BigDecimal("300");
-        //    BigDecimal price = new BigDecimal("10000");
-        BigDecimal price = orderBook.getBids().get(0).getLimitPrice().add(new BigDecimal("100"));
+        Double originalOrderSize = new Double("300");
+        //    Double price = new Double("10000");
+        Double price = orderBook.getBids().get(0).getLimitPrice() + (new Double("100"));
         LimitOrder limitOrder = new LimitOrder.Builder(Order.OrderType.ASK, CurrencyPair.XBT_USD).originalAmount(originalOrderSize).limitPrice(price).id(nosOrdId).build();
         String xbtusd = tradeService.placeLimitOrder(limitOrder);
-        logger.info("!!!!!PRIVATE_ORDER!!!! {}",xbtusd);
+        logger.info("!!!!!PRIVATE_ORDER!!!! {}", xbtusd);
         Thread.sleep(5000);
         System.out.println();
         System.out.println();
@@ -91,20 +89,19 @@ public class BitmexOrderReplaceTest {
         logger.info("Replacing");
         String replacedOrderId = nosOrdId + "replace";
         BitmexReplaceOrderParameters params = new BitmexReplaceOrderParameters.Builder()
-                .setOrderQuantity(originalOrderSize.divide(BigDecimal.valueOf(2)))
+                .setOrderQuantity(originalOrderSize/2d)
                 .setOrderId(xbtusd)
                 .setOrigClOrdId(nosOrdId)
                 .setClOrdId(replacedOrderId)
                 .build();
-        BitmexPrivateOrder replaceBPO = tradeService.replaceOrder(params);
-//        logger.info("!!!!!PRIVATE_ORDER_REPLACE!!!! {}",xbtusd);
+        //        logger.info("!!!!!PRIVATE_ORDER_REPLACE!!!! {}",xbtusd);
         Thread.sleep(10000);
         System.out.println();
         System.out.println();
         System.out.println();
         List<BitmexPrivateOrder> bitmexPrivateOrders = tradeService.cancelBitmexOrder(null, replacedOrderId);
         for (BitmexPrivateOrder bitmexPrivateOrder : bitmexPrivateOrders) {
-            logger.info("!!!!!PRIVATE_ORDER_CANCEL!!!! {}",bitmexPrivateOrder);
+            logger.info("!!!!!PRIVATE_ORDER_CANCEL!!!! {}", bitmexPrivateOrder);
 
         }
         Thread.sleep(10000);
@@ -112,7 +109,7 @@ public class BitmexOrderReplaceTest {
         //    BitmexPrivateOrder bitmexPrivateOrder =
         //        tradeService.replaceLimitOrder(
         //            "XBTUSD",
-        //            originalOrderSize.divide(new BigDecimal("2")),
+        //            originalOrderSize.divide(new Double("2")),
         //            null,
         //            orderId,
         //            //            null, null,

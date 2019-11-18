@@ -7,45 +7,19 @@ import org.knowm.xchange.dto.Order;
 import org.knowm.xchange.dto.trade.LimitOrder;
 import org.knowm.xchange.dto.trade.MarketOrder;
 
-import java.math.BigDecimal;
-
 
 public class BitmexOrder extends BitmexMarketDataEvent {
 
-    public enum OrderStatus {
-        NEW,
-        PARTIALLYFILLED,
-        FILLED,
-        TBD,
-        CANCELED,
-        REJECTED,
-        UNKNOW
-    }
-
     private String orderID;
-
     private int account;
-
     private String side;
-
-    private BigDecimal price;
-
-    private BigDecimal avgPx;
-
+    private Double price;
+    private Double avgPx;
     private String ordType;
-
     private OrderStatus ordStatus;
-
     private String clOrdID;
-
-    private BigDecimal orderQty;
-
-    private BigDecimal cumQty;
-
-    public boolean isNotWorkingIndicator() {
-        return !workingIndicator;
-    }
-
+    private Double orderQty;
+    private Double cumQty;
     private boolean workingIndicator;
 
     @JsonCreator
@@ -54,13 +28,13 @@ public class BitmexOrder extends BitmexMarketDataEvent {
                        @JsonProperty("orderID") String orderID,
                        @JsonProperty("account") int account,
                        @JsonProperty("side") String side,
-                       @JsonProperty("price") BigDecimal price,
-                       @JsonProperty("avgPx") BigDecimal avgPx,
+                       @JsonProperty("price") Double price,
+                       @JsonProperty("avgPx") Double avgPx,
                        @JsonProperty("ordType") String ordType,
                        @JsonProperty("ordStatus") String ordStatus,
                        @JsonProperty("clOrdID") String clOrdID,
-                       @JsonProperty("orderQty") BigDecimal orderQty,
-                       @JsonProperty("cumQty") BigDecimal cumQty,
+                       @JsonProperty("orderQty") Double orderQty,
+                       @JsonProperty("cumQty") Double cumQty,
                        @JsonProperty("workingIndicator") boolean workingIndicator) {
         super(symbol, timestamp);
         this.orderID = orderID;
@@ -78,6 +52,10 @@ public class BitmexOrder extends BitmexMarketDataEvent {
         this.orderQty = orderQty;
         this.cumQty = cumQty;
         this.workingIndicator = workingIndicator;
+    }
+
+    public boolean isNotWorkingIndicator() {
+        return !workingIndicator;
     }
 
     public Order toOrder() {
@@ -133,11 +111,11 @@ public class BitmexOrder extends BitmexMarketDataEvent {
         return side;
     }
 
-    public BigDecimal getPrice() {
+    public Double getPrice() {
         return price;
     }
 
-    public BigDecimal getAvgPx() {
+    public Double getAvgPx() {
         return avgPx;
     }
 
@@ -153,15 +131,25 @@ public class BitmexOrder extends BitmexMarketDataEvent {
         return clOrdID;
     }
 
-    public BigDecimal getOrderQty() {
+    public Double getOrderQty() {
         return orderQty;
     }
 
-    public BigDecimal getCumQty() {
+    public Double getCumQty() {
         return cumQty;
     }
 
     public boolean isWorkingIndicator() {
         return workingIndicator;
+    }
+
+    public enum OrderStatus {
+        NEW,
+        PARTIALLYFILLED,
+        FILLED,
+        TBD,
+        CANCELED,
+        REJECTED,
+        UNKNOW
     }
 }

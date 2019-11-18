@@ -1,16 +1,15 @@
 package info.bitrich.xchangestream.poloniex2.dto;
 
-import java.math.BigDecimal;
 
 /**
  * Created by Lukas Zaoralek on 11.11.17.
  */
 public class OrderbookModifiedEvent {
     private String type;
-    private BigDecimal price;
-    private BigDecimal volume;
+    private Double price;
+    private Double volume;
 
-    public OrderbookModifiedEvent(String type, BigDecimal price, BigDecimal volume) {
+    public OrderbookModifiedEvent(String type, Double price, Double volume) {
         this.type = type;
         this.price = price;
         this.volume = volume;
@@ -20,11 +19,11 @@ public class OrderbookModifiedEvent {
         return type;
     }
 
-    public BigDecimal getPrice() {
+    public Double getPrice() {
         return price;
     }
 
-    public BigDecimal getVolume() {
+    public Double getVolume() {
         return volume;
     }
 }

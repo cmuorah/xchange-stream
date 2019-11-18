@@ -3,7 +3,6 @@ package info.bitrich.xchangestream.okcoin.dto;
 import org.knowm.xchange.dto.Order;
 import org.knowm.xchange.okcoin.dto.marketdata.OkCoinDepth;
 
-import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.Date;
 import java.util.SortedMap;
@@ -13,10 +12,9 @@ import java.util.TreeMap;
  * Created by Lukas Zaoralek on 16.11.17.
  */
 public class OkCoinOrderbook {
-    private final BigDecimal zero = new BigDecimal(0);
 
-    private final SortedMap<BigDecimal, BigDecimal[]> asks;
-    private final SortedMap<BigDecimal, BigDecimal[]> bids;
+    private final SortedMap<Double, Double[]> asks;
+    private final SortedMap<Double, Double[]> bids;
 
     public OkCoinOrderbook() {
         asks = new TreeMap<>(java.util.Collections.reverseOrder()); //Because okcoin adapter uses reverse sort for asks!!!
@@ -29,47 +27,48 @@ public class OkCoinOrderbook {
     }
 
     public void createFromDepth(OkCoinDepth depth) {
-        BigDecimal[][] depthAsks = depth.getAsks();
-        BigDecimal[][] depthBids = depth.getBids();
+        Double[][] depthAsks = depth.getAsks();
+        Double[][] depthBids = depth.getBids();
 
         createFromDepthLevels(depthAsks, Order.OrderType.ASK);
         createFromDepthLevels(depthBids, Order.OrderType.BID);
     }
 
-    public void createFromDepthLevels(BigDecimal[][] depthLevels, Order.OrderType side) {
-        SortedMap<BigDecimal, BigDecimal[]> orderbookLevels = side == Order.OrderType.ASK ? asks : bids;
-        for (BigDecimal[] level : depthLevels) {
+    public void createFromDepthLevels(Double[][] depthLevels, Order.OrderType side) {
+        SortedMap<Double, Double[]> orderbookLevels = side == Order.OrderType.ASK ? asks : bids;
+        for (Double[] level : depthLevels) {
             orderbookLevels.put(level[0], level);
         }
     }
 
-    public void updateLevels(BigDecimal[][] depthLevels, Order.OrderType side) {
-        for (BigDecimal[] level : depthLevels) {
+    public void updateLevels(Double[][] depthLevels, Order.OrderType side) {
+        for (Double[] level : depthLevels) {
             updateLevel(level, side);
         }
     }
 
-    public void updateLevel(BigDecimal[] level, Order.OrderType side) {
-        SortedMap<BigDecimal, BigDecimal[]> orderBookSide = side == Order.OrderType.ASK ? asks : bids;
+    public void updateLevel(Double[] level, Order.OrderType side) {
+        SortedMap<Double, Double[]> orderBookSide = side == Order.OrderType.ASK ? asks : bids;
+        double zero = 0d;
         boolean shouldDelete = level[1].compareTo(zero) == 0;
-        BigDecimal price = level[0];
+        Double price = level[0];
         orderBookSide.remove(price);
         if (!shouldDelete) {
             orderBookSide.put(price, level);
         }
     }
 
-    public BigDecimal[][] getSide(Order.OrderType side) {
-        SortedMap<BigDecimal, BigDecimal[]> orderbookLevels = side == Order.OrderType.ASK ? asks : bids;
-        Collection<BigDecimal[]> levels = orderbookLevels.values();
-        return levels.toArray(new BigDecimal[orderbookLevels.size()][]);
+    public Double[][] getSide(Order.OrderType side) {
+        SortedMap<Double, Double[]> orderbookLevels = side == Order.OrderType.ASK ? asks : bids;
+        Collection<Double[]> levels = orderbookLevels.values();
+        return levels.toArray(new Double[orderbookLevels.size()][]);
     }
 
-    public BigDecimal[][] getAsks() {
+    public Double[][] getAsks() {
         return getSide(Order.OrderType.ASK);
     }
 
-    public BigDecimal[][] getBids() {
+    public Double[][] getBids() {
         return getSide(Order.OrderType.BID);
     }
 

@@ -3,7 +3,6 @@ package info.bitrich.xchangestream.bitfinex.dto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import org.knowm.xchange.bitfinex.v1.dto.marketdata.BitfinexTicker;
 
-import java.math.BigDecimal;
 
 /**
  * Created by Lukas Zaoralek on 8.11.17.
@@ -27,15 +26,15 @@ public class BitfinexWebSocketTickerTransaction {
     }
 
     public BitfinexTicker toBitfinexTicker() {
-        BigDecimal bid = new BigDecimal(tickerArr[0]);
-        BigDecimal ask = new BigDecimal(tickerArr[2]);
-        BigDecimal mid = ask.subtract(bid);
-        BigDecimal low = new BigDecimal(tickerArr[9]);
-        BigDecimal high = new BigDecimal(tickerArr[8]);
-        BigDecimal last = new BigDecimal(tickerArr[6]);
+        Double bid = new Double(tickerArr[0]);
+        Double ask = new Double(tickerArr[2]);
+        Double mid = (ask - bid) / 2.0;
+        Double low = new Double(tickerArr[9]);
+        Double high = new Double(tickerArr[8]);
+        Double last = new Double(tickerArr[6]);
         // Xchange-bitfinex adapter expects the timestamp to be seconds since Epoch.
-        double timestamp = System.currentTimeMillis() / 1000;
-        BigDecimal volume = new BigDecimal(tickerArr[7]);
+        double timestamp = System.currentTimeMillis() / 1000.0;
+        Double volume = new Double(tickerArr[7]);
 
         return new BitfinexTicker(mid, bid, ask, low, high, last, timestamp, volume);
     }

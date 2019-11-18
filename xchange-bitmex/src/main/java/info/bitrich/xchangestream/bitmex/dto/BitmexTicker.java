@@ -3,25 +3,23 @@ package info.bitrich.xchangestream.bitmex.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.knowm.xchange.dto.marketdata.Ticker;
 
-import java.math.BigDecimal;
-
 /**
  * Created by Lukas Zaoralek on 13.11.17.
  */
 public class BitmexTicker extends BitmexMarketDataEvent {
     private final String timestamp;
     private final String symbol;
-    private final BigDecimal bidSize;
-    private final BigDecimal bidPrice;
-    private final BigDecimal askPrice;
-    private final BigDecimal askSize;
+    private final Double bidSize;
+    private final Double bidPrice;
+    private final Double askPrice;
+    private final Double askSize;
 
     public BitmexTicker(@JsonProperty("timestamp") String timestamp,
                         @JsonProperty("symbol") String symbol,
-                        @JsonProperty("bidSize") BigDecimal bidSize,
-                        @JsonProperty("bidPrice") BigDecimal bidPrice,
-                        @JsonProperty("askPrice") BigDecimal askPrice,
-                        @JsonProperty("askSize") BigDecimal askSize) {
+                        @JsonProperty("bidSize") Double bidSize,
+                        @JsonProperty("bidPrice") Double bidPrice,
+                        @JsonProperty("askPrice") Double askPrice,
+                        @JsonProperty("askSize") Double askSize) {
         super(symbol, timestamp);
         this.timestamp = timestamp;
         this.symbol = symbol;
@@ -39,19 +37,19 @@ public class BitmexTicker extends BitmexMarketDataEvent {
         return symbol;
     }
 
-    public BigDecimal getBidSize() {
+    public Double getBidSize() {
         return bidSize;
     }
 
-    public BigDecimal getBidPrice() {
+    public Double getBidPrice() {
         return bidPrice;
     }
 
-    public BigDecimal getAskPrice() {
+    public Double getAskPrice() {
         return askPrice;
     }
 
-    public BigDecimal getAskSize() {
+    public Double getAskSize() {
         return askSize;
     }
 

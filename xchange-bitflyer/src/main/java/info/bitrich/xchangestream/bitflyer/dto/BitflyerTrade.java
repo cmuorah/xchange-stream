@@ -5,7 +5,6 @@ import org.knowm.xchange.currency.CurrencyPair;
 import org.knowm.xchange.dto.Order;
 import org.knowm.xchange.dto.marketdata.Trade;
 
-import java.math.BigDecimal;
 
 /**
  * Created by Lukas Zaoralek on 15.11.17.
@@ -13,15 +12,15 @@ import java.math.BigDecimal;
 public class BitflyerTrade extends BitflyerMarketEvent {
     private final String id;
     private final String side;
-    private final BigDecimal price;
-    private final BigDecimal size;
+    private final Double price;
+    private final Double size;
     private final String buy_child_order_acceptance_id;
     private final String sell_child_order_acceptance_id;
 
     public BitflyerTrade(@JsonProperty("id") String id,
                          @JsonProperty("side") String side,
-                         @JsonProperty("price") BigDecimal price,
-                         @JsonProperty("size") BigDecimal size,
+                         @JsonProperty("price") Double price,
+                         @JsonProperty("size") Double size,
                          @JsonProperty("exec_date") String timestamp,
                          @JsonProperty("buy_child_order_acceptance_id") String buy_child_order_acceptance_id,
                          @JsonProperty("sell_child_order_acceptance_id") String sell_child_order_acceptance_id) {
@@ -42,11 +41,11 @@ public class BitflyerTrade extends BitflyerMarketEvent {
         return side;
     }
 
-    public BigDecimal getPrice() {
+    public Double getPrice() {
         return price;
     }
 
-    public BigDecimal getSize() {
+    public Double getSize() {
         return size;
     }
 

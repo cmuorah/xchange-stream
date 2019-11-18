@@ -1,7 +1,6 @@
 package info.bitrich.xchangestream.gemini;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import info.bitrich.xchangestream.service.netty.JsonNettyStreamingService;
 import org.knowm.xchange.currency.CurrencyPair;
 import org.slf4j.Logger;

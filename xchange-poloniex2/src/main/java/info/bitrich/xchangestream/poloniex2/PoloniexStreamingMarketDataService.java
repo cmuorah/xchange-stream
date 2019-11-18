@@ -2,14 +2,7 @@ package info.bitrich.xchangestream.poloniex2;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import info.bitrich.xchangestream.core.StreamingMarketDataService;
-import info.bitrich.xchangestream.poloniex2.dto.OrderbookInsertEvent;
-import info.bitrich.xchangestream.poloniex2.dto.OrderbookModifiedEvent;
-import info.bitrich.xchangestream.poloniex2.dto.PoloniexOrderbook;
-import info.bitrich.xchangestream.poloniex2.dto.PoloniexWebSocketEvent;
-import info.bitrich.xchangestream.poloniex2.dto.PoloniexWebSocketOrderbookInsertEvent;
-import info.bitrich.xchangestream.poloniex2.dto.PoloniexWebSocketOrderbookModifiedEvent;
-import info.bitrich.xchangestream.poloniex2.dto.PoloniexWebSocketTickerTransaction;
-import info.bitrich.xchangestream.poloniex2.dto.PoloniexWebSocketTradeEvent;
+import info.bitrich.xchangestream.poloniex2.dto.*;
 import info.bitrich.xchangestream.service.netty.StreamingObjectMapperHelper;
 import io.reactivex.Observable;
 import org.knowm.xchange.currency.CurrencyPair;
@@ -19,15 +12,12 @@ import org.knowm.xchange.dto.marketdata.Trade;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.SortedMap;
 
-import static org.knowm.xchange.poloniex.PoloniexAdapters.adaptPoloniexDepth;
-import static org.knowm.xchange.poloniex.PoloniexAdapters.adaptPoloniexPublicTrade;
-import static org.knowm.xchange.poloniex.PoloniexAdapters.adaptPoloniexTicker;
+import static org.knowm.xchange.poloniex.PoloniexAdapters.*;
 
 /**
  * Created by Lukas Zaoralek on 10.11.17.
@@ -98,8 +88,8 @@ public class PoloniexStreamingMarketDataService implements StreamingMarketDataSe
     ) {
         if (s.getEventType().equals("i")) {
             OrderbookInsertEvent insertEvent = ((PoloniexWebSocketOrderbookInsertEvent) s).getInsert();
-            SortedMap<BigDecimal, BigDecimal> asks = insertEvent.toDepthLevels(OrderbookInsertEvent.ASK_SIDE);
-            SortedMap<BigDecimal, BigDecimal> bids = insertEvent.toDepthLevels(OrderbookInsertEvent.BID_SIDE);
+            SortedMap<Double, Double> asks = insertEvent.toDepthLevels(OrderbookInsertEvent.ASK_SIDE);
+            SortedMap<Double, Double> bids = insertEvent.toDepthLevels(OrderbookInsertEvent.BID_SIDE);
             return Optional.of(new PoloniexOrderbook(asks, bids));
         } else {
             OrderbookModifiedEvent modifiedEvent = ((PoloniexWebSocketOrderbookModifiedEvent) s).getModifiedEvent();

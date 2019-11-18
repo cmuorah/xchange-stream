@@ -1,6 +1,5 @@
 package info.bitrich.xchangestream.okcoin;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import info.bitrich.xchangestream.core.StreamingMarketDataService;
 import info.bitrich.xchangestream.okcoin.dto.OkCoinOrderbook;
@@ -20,7 +19,6 @@ import org.knowm.xchange.okcoin.dto.marketdata.OkCoinDepth;
 import org.knowm.xchange.okcoin.dto.marketdata.OkCoinTicker;
 import org.knowm.xchange.okcoin.dto.marketdata.OkCoinTickerResponse;
 
-import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -70,7 +68,7 @@ public class OkCoinStreamingMarketDataService implements StreamingMarketDataServ
                 channel = channel + "_" + args[1];
             }
         }
-        final String key=channel;
+        final String key = channel;
 
         return service.subscribeChannel(channel)
                 .map(s -> {
@@ -83,14 +81,14 @@ public class OkCoinStreamingMarketDataService implements StreamingMarketDataServ
                         okCoinOrderbook = orderbooks.get(key);
                         if (s.get("data").has("asks")) {
                             if (s.get("data").get("asks").size() > 0) {
-                                BigDecimal[][] askLevels = mapper.treeToValue(s.get("data").get("asks"), BigDecimal[][].class);
+                                Double[][] askLevels = mapper.treeToValue(s.get("data").get("asks"), Double[][].class);
                                 okCoinOrderbook.updateLevels(askLevels, Order.OrderType.ASK);
                             }
                         }
 
                         if (s.get("data").has("bids")) {
                             if (s.get("data").get("bids").size() > 0) {
-                                BigDecimal[][] bidLevels = mapper.treeToValue(s.get("data").get("bids"), BigDecimal[][].class);
+                                Double[][] bidLevels = mapper.treeToValue(s.get("data").get("bids"), Double[][].class);
                                 okCoinOrderbook.updateLevels(bidLevels, Order.OrderType.BID);
                             }
                         }
@@ -114,7 +112,6 @@ public class OkCoinStreamingMarketDataService implements StreamingMarketDataServ
 
         return service.subscribeChannel(channel)
                 .map(s -> {
-                    // TODO: fix parsing of BigDecimal attribute val that has format: 1,625.23
                     OkCoinTicker okCoinTicker = mapper.treeToValue(s.get("data"), OkCoinTicker.class);
                     return OkCoinAdapters.adaptTicker(new OkCoinTickerResponse(okCoinTicker), currencyPair);
                 });

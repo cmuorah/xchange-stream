@@ -1,15 +1,8 @@
 package info.bitrich.xchangestream.coinbasepro;
 
-import static org.knowm.xchange.coinbasepro.CoinbaseProAdapters.adaptTicker;
-import static org.knowm.xchange.coinbasepro.CoinbaseProAdapters.adaptTrades;
-
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Map;
-import java.util.SortedMap;
-import java.util.TreeMap;
-import java.util.concurrent.ConcurrentHashMap;
-
+import info.bitrich.xchangestream.coinbasepro.dto.CoinbaseProWebSocketTransaction;
+import info.bitrich.xchangestream.core.StreamingMarketDataService;
+import io.reactivex.Observable;
 import org.knowm.xchange.coinbasepro.dto.marketdata.CoinbaseProProductTicker;
 import org.knowm.xchange.coinbasepro.dto.marketdata.CoinbaseProTrade;
 import org.knowm.xchange.currency.CurrencyPair;
@@ -18,9 +11,14 @@ import org.knowm.xchange.dto.marketdata.Ticker;
 import org.knowm.xchange.dto.marketdata.Trade;
 import org.knowm.xchange.dto.marketdata.Trades;
 
-import info.bitrich.xchangestream.coinbasepro.dto.CoinbaseProWebSocketTransaction;
-import info.bitrich.xchangestream.core.StreamingMarketDataService;
-import io.reactivex.Observable;
+import java.util.List;
+import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
+import java.util.concurrent.ConcurrentHashMap;
+
+import static org.knowm.xchange.coinbasepro.CoinbaseProAdapters.adaptTicker;
+import static org.knowm.xchange.coinbasepro.CoinbaseProAdapters.adaptTrades;
 
 /**
  * Created by luca on 4/3/17.
@@ -34,8 +32,8 @@ public class CoinbaseProStreamingMarketDataService implements StreamingMarketDat
 
     private final CoinbaseProStreamingService service;
 
-    private final Map<CurrencyPair, SortedMap<BigDecimal, BigDecimal>> bids = new ConcurrentHashMap<>();
-    private final Map<CurrencyPair, SortedMap<BigDecimal, BigDecimal>> asks = new ConcurrentHashMap<>();
+    private final Map<CurrencyPair, SortedMap<Double, Double>> bids = new ConcurrentHashMap<>();
+    private final Map<CurrencyPair, SortedMap<Double, Double>> asks = new ConcurrentHashMap<>();
 
     CoinbaseProStreamingMarketDataService(CoinbaseProStreamingService service) {
         this.service = service;
@@ -64,10 +62,10 @@ public class CoinbaseProStreamingMarketDataService implements StreamingMarketDat
                         asks.put(currencyPair, new TreeMap<>());
                     }
                     return s.toOrderBook(
-                        bids.get(currencyPair),
-                        asks.get(currencyPair),
-                        maxDepth,
-                        currencyPair);
+                            bids.get(currencyPair),
+                            asks.get(currencyPair),
+                            maxDepth,
+                            currencyPair);
                 });
     }
 

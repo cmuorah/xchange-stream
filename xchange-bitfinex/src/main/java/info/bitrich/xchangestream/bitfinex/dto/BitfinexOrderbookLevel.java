@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import org.knowm.xchange.bitfinex.v1.dto.marketdata.BitfinexLevel;
 
-import java.math.BigDecimal;
 
 /**
  * Created by Lukas Zaoralek on 8.11.17.
@@ -13,35 +12,35 @@ import java.math.BigDecimal;
 @JsonPropertyOrder({"price","count","amount"})
 public class BitfinexOrderbookLevel {
 
-    public BigDecimal price;
+    public Double price;
 
-    public BigDecimal count;
+    public Double count;
 
-    public BigDecimal amount;
+    public Double amount;
 
     public BitfinexOrderbookLevel() {
     }
 
-    public BitfinexOrderbookLevel(BigDecimal price, BigDecimal count, BigDecimal amount) {
+    public BitfinexOrderbookLevel(Double price, Double count, Double amount) {
         this.price = price;
         this.amount = amount;
         this.count = count;
     }
 
-    public BigDecimal getPrice() {
+    public Double getPrice() {
         return price;
     }
 
-    public BigDecimal getAmount() {
+    public Double getAmount() {
         return amount;
     }
 
-    public BigDecimal getCount() {
+    public Double getCount() {
         return count;
     }
 
     public BitfinexLevel toBitfinexLevel() {
         // Xchange-bitfinex adapter expects the timestamp to be seconds since Epoch.
-        return new BitfinexLevel(price, amount, new BigDecimal(System.currentTimeMillis() / 1000));
+        return new BitfinexLevel(price, amount, (double) (System.currentTimeMillis() / 1000));
     }
 }

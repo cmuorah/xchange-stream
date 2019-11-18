@@ -1,6 +1,7 @@
 package info.bitrich.xchangestream.gemini;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import info.bitrich.xchangestream.service.netty.NettyStreamingService;
 import io.reactivex.Observable;
 import org.knowm.xchange.currency.CurrencyPair;
 import org.slf4j.Logger;
@@ -41,6 +42,6 @@ public class GeminiStreamingService {
 
     public boolean isAlive() {
         return productStreamingServices.values().stream()
-                .allMatch(ps -> ps.isSocketOpen());
+                .allMatch(NettyStreamingService::isSocketOpen);
     }
 }

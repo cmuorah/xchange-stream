@@ -7,10 +7,10 @@ import java.util.List;
 
 public class OutboundAccountInfoBinanceWebsocketTransaction extends BaseBinanceWebSocketTransaction {
 
-    private final BigDecimal makerCommissionRate;
-    private final BigDecimal takerCommissionRate;
-    private final BigDecimal buyerCommissionRate;
-    private final BigDecimal sellerCommissionRate;
+    private final Double makerCommissionRate;
+    private final Double takerCommissionRate;
+    private final Double buyerCommissionRate;
+    private final Double sellerCommissionRate;
     private final boolean canTrade;
     private final boolean canWithdraw;
     private final boolean canDeposit;
@@ -20,10 +20,10 @@ public class OutboundAccountInfoBinanceWebsocketTransaction extends BaseBinanceW
     public OutboundAccountInfoBinanceWebsocketTransaction(
             @JsonProperty("e") String eventType,
             @JsonProperty("E") String eventTime,
-            @JsonProperty("m") BigDecimal makerCommissionRate,
-            @JsonProperty("t") BigDecimal takerCommissionRate,
-            @JsonProperty("b") BigDecimal buyerCommissionRate,
-            @JsonProperty("s") BigDecimal sellerCommissionRate,
+            @JsonProperty("m") Double makerCommissionRate,
+            @JsonProperty("t") Double takerCommissionRate,
+            @JsonProperty("b") Double buyerCommissionRate,
+            @JsonProperty("s") Double sellerCommissionRate,
             @JsonProperty("T") boolean canTrade,
             @JsonProperty("W") boolean canWithdraw,
             @JsonProperty("D") boolean canDeposit,
@@ -42,19 +42,19 @@ public class OutboundAccountInfoBinanceWebsocketTransaction extends BaseBinanceW
         this.balances = balances;
     }
 
-    public BigDecimal getMakerCommissionRate() {
+    public Double getMakerCommissionRate() {
         return makerCommissionRate;
     }
 
-    public BigDecimal getTakerCommissionRate() {
+    public Double getTakerCommissionRate() {
         return takerCommissionRate;
     }
 
-    public BigDecimal getBuyerCommissionRate() {
+    public Double getBuyerCommissionRate() {
         return buyerCommissionRate;
     }
 
-    public BigDecimal getSellerCommissionRate() {
+    public Double getSellerCommissionRate() {
         return sellerCommissionRate;
     }
 

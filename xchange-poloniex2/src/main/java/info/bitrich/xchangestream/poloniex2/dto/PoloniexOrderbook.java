@@ -2,7 +2,6 @@ package info.bitrich.xchangestream.poloniex2.dto;
 
 import org.knowm.xchange.poloniex.dto.marketdata.PoloniexDepth;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -12,20 +11,20 @@ import java.util.SortedMap;
  * Created by Lukas Zaoralek on 11.11.17.
  */
 public class PoloniexOrderbook {
-    public static BigDecimal zero = new BigDecimal(0);
+    public static final Double zero = 0d;
 
-    private SortedMap<BigDecimal, BigDecimal> asks;
-    private SortedMap<BigDecimal, BigDecimal> bids;
+    private SortedMap<Double, Double> asks;
+    private SortedMap<Double, Double> bids;
 
-    public PoloniexOrderbook(SortedMap<BigDecimal, BigDecimal> asks, SortedMap<BigDecimal, BigDecimal> bids) {
+    public PoloniexOrderbook(SortedMap<Double, Double> asks, SortedMap<Double, Double> bids) {
         this.asks = asks;
         this.bids = bids;
     }
 
     public void modify(OrderbookModifiedEvent modifiedEvent) {
-        SortedMap<BigDecimal, BigDecimal> side = modifiedEvent.getType().equals("0") ? asks : bids;
-        BigDecimal price = modifiedEvent.getPrice();
-        BigDecimal volume = modifiedEvent.getVolume();
+        SortedMap<Double, Double> side = modifiedEvent.getType().equals("0") ? asks : bids;
+        Double price = modifiedEvent.getPrice();
+        Double volume = modifiedEvent.getVolume();
 
         side.remove(price);
         if (volume.compareTo(zero) != 0) {
@@ -33,10 +32,10 @@ public class PoloniexOrderbook {
         }
     }
 
-    private List<List<BigDecimal>> toPoloniexDepthLevels(SortedMap<BigDecimal, BigDecimal> side) {
-        List<List<BigDecimal>> poloniexDepthSide = new ArrayList<>(side.size());
-        for (Map.Entry<BigDecimal, BigDecimal> level : side.entrySet()) {
-            List<BigDecimal> poloniexLevel = new ArrayList<>(2);
+    private List<List<Double>> toPoloniexDepthLevels(SortedMap<Double, Double> side) {
+        List<List<Double>> poloniexDepthSide = new ArrayList<>(side.size());
+        for (Map.Entry<Double, Double> level : side.entrySet()) {
+            List<Double> poloniexLevel = new ArrayList<>(2);
             poloniexLevel.add(level.getKey());
             poloniexLevel.add(level.getValue());
             poloniexDepthSide.add(poloniexLevel);
@@ -48,8 +47,8 @@ public class PoloniexOrderbook {
     public PoloniexDepth toPoloniexDepth() {
         PoloniexDepth orderbook = new PoloniexDepth();
 
-        List<List<BigDecimal>> poloniexDepthAsk = toPoloniexDepthLevels(asks);
-        List<List<BigDecimal>> poloniexDepthBid = toPoloniexDepthLevels(bids);
+        List<List<Double>> poloniexDepthAsk = toPoloniexDepthLevels(asks);
+        List<List<Double>> poloniexDepthBid = toPoloniexDepthLevels(bids);
 
         orderbook.setAsks(poloniexDepthAsk);
         orderbook.setBids(poloniexDepthBid);

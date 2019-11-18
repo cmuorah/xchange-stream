@@ -7,7 +7,6 @@ import org.knowm.xchange.dto.marketdata.OrderBook;
 
 import java.util.Date;
 
-import static java.math.BigDecimal.ONE;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.knowm.xchange.currency.CurrencyPair.BTC_USD;
 
@@ -16,8 +15,8 @@ public class BitfinexOrderbookTest {
     @Test
     public void timestampShouldBeInSeconds() {
         BitfinexDepth depth = new BitfinexOrderbook(new BitfinexOrderbookLevel[]{
-                new BitfinexOrderbookLevel(ONE, ONE, ONE),
-                new BitfinexOrderbookLevel(ONE, ONE, ONE)
+                new BitfinexOrderbookLevel(1d, 1d, 1d),
+                new BitfinexOrderbookLevel(1d, 1d, 1d)
         }).toBitfinexDepth();
 
         OrderBook orderBook = BitfinexAdapters.adaptOrderBook(depth, BTC_USD);

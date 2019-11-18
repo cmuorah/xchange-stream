@@ -2,7 +2,6 @@ package info.bitrich.xchangestream.poloniex2.dto;
 
 import org.knowm.xchange.poloniex.dto.marketdata.PoloniexPublicTrade;
 
-import java.math.BigDecimal;
 
 /**
  * Created by Lukas Zaoralek on 11.11.17.
@@ -10,11 +9,11 @@ import java.math.BigDecimal;
 public class TradeEvent {
     private String tradeId;
     private String type;
-    private BigDecimal rate;
-    private BigDecimal amount;
+    private Double rate;
+    private Double amount;
     private String date;
 
-    public TradeEvent(String tradeId, String type, BigDecimal rate, BigDecimal amount, String date) {
+    public TradeEvent(String tradeId, String type, Double rate, Double amount, String date) {
         this.tradeId = tradeId;
         this.type = type;
         this.rate = rate;
@@ -30,11 +29,11 @@ public class TradeEvent {
         return type;
     }
 
-    public BigDecimal getRate() {
+    public Double getRate() {
         return rate;
     }
 
-    public BigDecimal getAmount() {
+    public Double getAmount() {
         return amount;
     }
 
@@ -48,7 +47,7 @@ public class TradeEvent {
         poloniexPublicTrade.setType(type);
         poloniexPublicTrade.setRate(rate);
         poloniexPublicTrade.setAmount(amount);
-        BigDecimal total = rate.multiply(amount);
+        Double total = rate * amount;
         poloniexPublicTrade.setTotal(total);
         poloniexPublicTrade.setDate(date);
         return poloniexPublicTrade;

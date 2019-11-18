@@ -5,26 +5,25 @@ import org.knowm.xchange.currency.CurrencyPair;
 import org.knowm.xchange.dto.Order;
 import org.knowm.xchange.dto.trade.LimitOrder;
 
-import java.math.BigDecimal;
 
 /**
  * Created by Lukas Zaoralek on 14.11.17.
  */
 public class BitflyerLimitOrder {
-    private final BigDecimal price;
-    private final BigDecimal size;
+    private final Double price;
+    private final Double size;
 
-    public BitflyerLimitOrder(@JsonProperty("price") BigDecimal price,
-                              @JsonProperty("size") BigDecimal size) {
+    public BitflyerLimitOrder(@JsonProperty("price") Double price,
+                              @JsonProperty("size") Double size) {
         this.price = price;
         this.size = size;
     }
 
-    public BigDecimal getPrice() {
+    public Double getPrice() {
         return price;
     }
 
-    public BigDecimal getSize() {
+    public Double getSize() {
         return size;
     }
 

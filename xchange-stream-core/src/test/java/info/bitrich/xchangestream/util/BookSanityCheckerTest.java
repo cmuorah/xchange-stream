@@ -26,10 +26,8 @@ public class BookSanityCheckerTest {
   public void testWithAsksWithBidsNoErrors() {
     ArrayList<LimitOrder> asks = new ArrayList<>();
     ArrayList<LimitOrder> bids = new ArrayList<>();
-    asks.add(new LimitOrder(Order.OrderType.ASK, new BigDecimal(0.02), CurrencyPair.ADA_BNB, "1", new Date(),
-        new BigDecimal(0.02)));
-    bids.add(new LimitOrder(Order.OrderType.BID, new BigDecimal(0.01), CurrencyPair.ADA_BNB, "2", new Date(),
-        new BigDecimal(0.01)));
+    asks.add(new LimitOrder(Order.OrderType.ASK, 0.02, CurrencyPair.ADA_BNB, "1", new Date(), 0.02));
+    bids.add(new LimitOrder(Order.OrderType.BID, 0.01, CurrencyPair.ADA_BNB, "2", new Date(), 0.01));
     OrderBook book = new OrderBook(new Date(), asks, bids);
     Assert.assertNull(BookSanityChecker.hasErrors(book));
   }
@@ -38,10 +36,8 @@ public class BookSanityCheckerTest {
   public void testNoBidsNoErrors() {
     ArrayList<LimitOrder> asks = new ArrayList<>();
     ArrayList<LimitOrder> bids = new ArrayList<>();
-    asks.add(new LimitOrder(Order.OrderType.ASK, new BigDecimal(0.01), CurrencyPair.ADA_BNB, "1", new Date(),
-        new BigDecimal(0.01)));
-    asks.add(new LimitOrder(Order.OrderType.ASK, new BigDecimal(0.02), CurrencyPair.ADA_BNB, "2", new Date(),
-        new BigDecimal(0.02)));
+    asks.add(new LimitOrder(Order.OrderType.ASK, 0.01, CurrencyPair.ADA_BNB, "1", new Date(), 0.01));
+    asks.add(new LimitOrder(Order.OrderType.ASK, 0.02, CurrencyPair.ADA_BNB, "2", new Date(), 0.02));
     OrderBook book = new OrderBook(new Date(), asks, bids);
     Assert.assertNull(BookSanityChecker.hasErrors(book));
   }
@@ -50,8 +46,7 @@ public class BookSanityCheckerTest {
   public void testWithAsksLimitOrderError() {
     ArrayList<LimitOrder> asks = new ArrayList<>();
     ArrayList<LimitOrder> bids = new ArrayList<>();
-    LimitOrder a1 = new LimitOrder(Order.OrderType.ASK, new BigDecimal(-0.01), CurrencyPair.ADA_BNB, "1", new Date(),
-        new BigDecimal(0.01));
+    LimitOrder a1 = new LimitOrder(Order.OrderType.ASK, -0.01, CurrencyPair.ADA_BNB, "1", new Date(), 0.01);
     asks.add(a1);
     OrderBook book = new OrderBook(new Date(), asks, bids);
     Assert.assertEquals(format("LimitOrder amount is <= 0 for %s", a1), BookSanityChecker.hasErrors(book));
@@ -61,8 +56,7 @@ public class BookSanityCheckerTest {
   public void testWithBidsLimitOrderError() {
     ArrayList<LimitOrder> asks = new ArrayList<>();
     ArrayList<LimitOrder> bids = new ArrayList<>();
-    LimitOrder b1 = new LimitOrder(Order.OrderType.BID, new BigDecimal(-0.01), CurrencyPair.ADA_BNB, "1", new Date(),
-        new BigDecimal(0.01));
+    LimitOrder b1 = new LimitOrder(Order.OrderType.BID, -0.01, CurrencyPair.ADA_BNB, "1", new Date(), 0.01);
     bids.add(b1);
     OrderBook book = new OrderBook(new Date(), asks, bids);
     Assert.assertEquals(format("LimitOrder amount is <= 0 for %s", b1), BookSanityChecker.hasErrors(book));
@@ -72,10 +66,8 @@ public class BookSanityCheckerTest {
   public void testWithBidNoErrorOnNextOrder() {
     ArrayList<LimitOrder> asks = new ArrayList<>();
     ArrayList<LimitOrder> bids = new ArrayList<>();
-    LimitOrder b1 = new LimitOrder(Order.OrderType.BID, new BigDecimal(-0.01), CurrencyPair.ADA_BNB, "1", new Date(),
-        new BigDecimal(0.01));
-    LimitOrder b2 = new LimitOrder(Order.OrderType.BID, new BigDecimal(0.01), CurrencyPair.ADA_BNB, "2", new Date(),
-        new BigDecimal(0.01));
+    LimitOrder b1 = new LimitOrder(Order.OrderType.BID, -0.01, CurrencyPair.ADA_BNB, "1", new Date(), 0.01);
+    LimitOrder b2 = new LimitOrder(Order.OrderType.BID, 0.01, CurrencyPair.ADA_BNB, "2", new Date(), 0.01);
     bids.add(b1);
     bids.add(b2);
     OrderBook book = new OrderBook(new Date(), asks, bids);
@@ -86,11 +78,9 @@ public class BookSanityCheckerTest {
   public void testIncorrectBestAskAndBid() {
     ArrayList<LimitOrder> asks = new ArrayList<>();
     ArrayList<LimitOrder> bids = new ArrayList<>();
-    LimitOrder a1 = new LimitOrder(Order.OrderType.ASK, new BigDecimal(0.01), CurrencyPair.ADA_BNB, "1", new Date(),
-        new BigDecimal(0.01));
+    LimitOrder a1 = new LimitOrder(Order.OrderType.ASK, 0.01, CurrencyPair.ADA_BNB, "1", new Date(), 0.01);
     asks.add(a1);
-    LimitOrder b1 = new LimitOrder(Order.OrderType.BID, new BigDecimal(0.02), CurrencyPair.ADA_BNB, "2", new Date(),
-        new BigDecimal(0.02));
+    LimitOrder b1 = new LimitOrder(Order.OrderType.BID, 0.02, CurrencyPair.ADA_BNB, "2", new Date(), 0.02);
     bids.add(b1);
     OrderBook book = new OrderBook(new Date(), asks, bids);
     Assert.assertEquals(format("Got incorrect best ask and bid %s, %s", a1, b1), BookSanityChecker.hasErrors(book));
@@ -100,10 +90,8 @@ public class BookSanityCheckerTest {
   public void testWithBidsWrongPriceOrder() {
     ArrayList<LimitOrder> asks = new ArrayList<>();
     ArrayList<LimitOrder> bids = new ArrayList<>();
-    LimitOrder b1 = new LimitOrder(Order.OrderType.BID, new BigDecimal(0.01), CurrencyPair.ADA_BNB, "1", new Date(),
-        new BigDecimal(0.01));
-    LimitOrder b2 = new LimitOrder(Order.OrderType.BID, new BigDecimal(0.02), CurrencyPair.ADA_BNB, "2", new Date(),
-        new BigDecimal(0.02));
+    LimitOrder b1 = new LimitOrder(Order.OrderType.BID, 0.01, CurrencyPair.ADA_BNB, "1", new Date(), 0.01);
+    LimitOrder b2 = new LimitOrder(Order.OrderType.BID, 0.02, CurrencyPair.ADA_BNB, "2", new Date(), 0.02);
     bids.add(b1);
     bids.add(b2);
     OrderBook book = new OrderBook(new Date(), asks, bids);

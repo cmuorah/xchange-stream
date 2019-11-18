@@ -1,16 +1,12 @@
 package info.bitrich.xchangestream.kraken;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
 import info.bitrich.xchangestream.kraken.dto.KrakenOrderBook;
 import info.bitrich.xchangestream.kraken.dto.enums.KrakenOrderBookMessageType;
-import info.bitrich.xchangestream.service.netty.StreamingObjectMapperHelper;
 import org.apache.commons.lang3.StringUtils;
 import org.knowm.xchange.kraken.dto.marketdata.KrakenPublicOrder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -87,14 +83,14 @@ public class KrakenOrderBookUtils {
 
     public static KrakenPublicOrder extractKrakenPublicOrder(List<String> list) {
         return new KrakenPublicOrder(
-                new BigDecimal(list.get(0)).stripTrailingZeros(),
-                new BigDecimal(list.get(1)).stripTrailingZeros(),
+                new Double(list.get(0)),
+                new Double(list.get(1)),
                 timestampToMs(list.get(2))
         );
     }
 
     private static long timestampToMs(String timestamp) {
-        return new BigDecimal(timestamp).multiply(new BigDecimal(1000)).longValue();
+        return (long) (Double.parseDouble(timestamp) * 1000d);
     }
 
 }

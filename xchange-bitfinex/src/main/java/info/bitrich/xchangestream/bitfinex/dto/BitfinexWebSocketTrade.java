@@ -3,7 +3,6 @@ package info.bitrich.xchangestream.bitfinex.dto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import org.knowm.xchange.bitfinex.v1.dto.marketdata.BitfinexTrade;
 
-import java.math.BigDecimal;
 
 /**
  * Created by Lukas Zaoralek on 7.11.17.
@@ -12,13 +11,13 @@ import java.math.BigDecimal;
 public class BitfinexWebSocketTrade {
     public long tradeId;
     public long timestamp;
-    public BigDecimal amount;
-    public BigDecimal price;
+    public Double amount;
+    public Double price;
 
     public BitfinexWebSocketTrade() {
     }
 
-    public BitfinexWebSocketTrade(long tradeId, long timestamp, BigDecimal amount, BigDecimal price) {
+    public BitfinexWebSocketTrade(long tradeId, long timestamp, Double amount, Double price) {
         this.tradeId = tradeId;
         this.timestamp = timestamp;
         this.amount = amount;
@@ -33,21 +32,21 @@ public class BitfinexWebSocketTrade {
         return timestamp;
     }
 
-    public BigDecimal getAmount() {
+    public Double getAmount() {
         return amount;
     }
 
-    public BigDecimal getPrice() {
+    public Double getPrice() {
         return price;
     }
 
     public BitfinexTrade toBitfinexTrade() {
         String type;
-        if (amount.compareTo(BigDecimal.ZERO) < 0) {
+        if (amount.compareTo(0d) < 0) {
             type = "sell";
         } else {
             type = "buy";
         }
-        return new BitfinexTrade(price, amount.abs(), timestamp / 1000, "bitfinex", tradeId, type);
+        return new BitfinexTrade(price, Math.abs(amount), timestamp / 1000, "bitfinex", tradeId, type);
     }
 }

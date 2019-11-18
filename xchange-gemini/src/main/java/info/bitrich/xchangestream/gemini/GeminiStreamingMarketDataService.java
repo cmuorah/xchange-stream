@@ -1,6 +1,5 @@
 package info.bitrich.xchangestream.gemini;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import info.bitrich.xchangestream.core.StreamingMarketDataService;
@@ -67,7 +66,7 @@ public class GeminiStreamingMarketDataService implements StreamingMarketDataServ
                 )
                 .map((JsonNode s) -> {
 
-                    if(filterEventsByReason(s, "change", "initial")) {
+                    if (filterEventsByReason(s, "change", "initial")) {
                         GeminiWebSocketTransaction transaction = mapper.treeToValue(s, GeminiWebSocketTransaction.class);
                         GeminiOrderbook orderbook = transaction.toGeminiOrderbook(currencyPair);
                         orderbooks.put(currencyPair, orderbook);
@@ -75,7 +74,7 @@ public class GeminiStreamingMarketDataService implements StreamingMarketDataServ
 
                     }
 
-                    if(filterEventsByReason(s, "change", "place") ||
+                    if (filterEventsByReason(s, "change", "place") ||
                             filterEventsByReason(s, "change", "cancel") ||
                             filterEventsByReason(s, "change", "trade")) {
 

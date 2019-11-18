@@ -1,17 +1,16 @@
 package info.bitrich.xchangestream.bitfinex.dto;
 
-import java.math.BigDecimal;
 import java.util.Objects;
 
 public class BitfinexWebSocketAuthBalance {
     private String walletType;
     private String currency;
-    private BigDecimal balance;
-    private BigDecimal unsettledInterest;
-    private BigDecimal balanceAvailable;
+    private Double balance;
+    private Double unsettledInterest;
+    private Double balanceAvailable;
 
-    public BitfinexWebSocketAuthBalance(String walletType, String currency, BigDecimal balance,
-                                        BigDecimal unsettledInterest, BigDecimal balanceAvailable) {
+    public BitfinexWebSocketAuthBalance(String walletType, String currency, Double balance,
+                                        Double unsettledInterest, Double balanceAvailable) {
         this.walletType = walletType;
         this.currency = currency;
         this.balance = balance;
@@ -27,15 +26,15 @@ public class BitfinexWebSocketAuthBalance {
         return currency;
     }
 
-    public BigDecimal getBalance() {
+    public Double getBalance() {
         return balance;
     }
 
-    public BigDecimal getUnsettledInterest() {
+    public Double getUnsettledInterest() {
         return unsettledInterest;
     }
 
-    public BigDecimal getBalanceAvailable() {
+    public Double getBalanceAvailable() {
         return balanceAvailable;
     }
 

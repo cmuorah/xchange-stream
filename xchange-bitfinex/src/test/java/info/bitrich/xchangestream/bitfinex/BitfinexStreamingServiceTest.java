@@ -2,32 +2,27 @@ package info.bitrich.xchangestream.bitfinex;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import info.bitrich.xchangestream.bitfinex.dto.BitfinexWebSocketAuthBalance;
 import info.bitrich.xchangestream.bitfinex.dto.BitfinexWebSocketAuthOrder;
 import info.bitrich.xchangestream.bitfinex.dto.BitfinexWebSocketAuthPreTrade;
 import info.bitrich.xchangestream.bitfinex.dto.BitfinexWebSocketAuthTrade;
-
 import io.reactivex.observers.TestObserver;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import si.mazi.rescu.SynchronizedValueFactory;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import si.mazi.rescu.SynchronizedValueFactory;
-
 public class BitfinexStreamingServiceTest {
 
-    private BitfinexStreamingService service;
     private final ObjectMapper objectMapper = new ObjectMapper();
-
-    @Mock SynchronizedValueFactory<Long> nonceFactory;
+    @Mock
+    SynchronizedValueFactory<Long> nonceFactory;
+    private BitfinexStreamingService service;
 
     @Before
     public void setUp() {
@@ -44,24 +39,24 @@ public class BitfinexStreamingServiceTest {
 
         service.handleMessage(jsonNode);
         BitfinexWebSocketAuthOrder expected =
-            new BitfinexWebSocketAuthOrder(
-                13759731408L,
-                0,
-                50999677532L,
-                "tETHUSD",
-                1530108599707L,
-                1530108599726L,
-                new BigDecimal("-0.02"),
-                new BigDecimal("-0.02"),
-                "EXCHANGE LIMIT",
-                null,
-                "ACTIVE",
-                new BigDecimal("431.19"),
-                BigDecimal.ZERO,
-                BigDecimal.ZERO,
-                BigDecimal.ZERO,
-                0L,
-                0);
+                new BitfinexWebSocketAuthOrder(
+                        13759731408L,
+                        0,
+                        50999677532L,
+                        "tETHUSD",
+                        1530108599707L,
+                        1530108599726L,
+                        new Double("-0.02"),
+                        new Double("-0.02"),
+                        "EXCHANGE LIMIT",
+                        null,
+                        "ACTIVE",
+                        new Double("431.19"),
+                        0d,
+                        0d,
+                        0d,
+                        0L,
+                        0);
         test.assertValue(expected);
     }
 
@@ -75,16 +70,16 @@ public class BitfinexStreamingServiceTest {
         service.handleMessage(jsonNode);
 
         BitfinexWebSocketAuthPreTrade expected =
-            new BitfinexWebSocketAuthPreTrade(
-                262861164L,
-                "tETHUSD",
-                1530187145559L,
-                13787457748L,
-                new BigDecimal("-0.04"),
-                new BigDecimal("435.8"),
-                "EXCHANGE LIMIT",
-                new BigDecimal("435.8"),
-                1);
+                new BitfinexWebSocketAuthPreTrade(
+                        262861164L,
+                        "tETHUSD",
+                        1530187145559L,
+                        13787457748L,
+                        new Double("-0.04"),
+                        new Double("435.8"),
+                        "EXCHANGE LIMIT",
+                        new Double("435.8"),
+                        1);
         test.assertValue(expected);
     }
 
@@ -98,18 +93,18 @@ public class BitfinexStreamingServiceTest {
         service.handleMessage(jsonNode);
 
         BitfinexWebSocketAuthTrade expected =
-            new BitfinexWebSocketAuthTrade(
-                262861164L,
-                "tETHUSD",
-                1530187145559L,
-                13787457748L,
-                new BigDecimal("-0.04"),
-                new BigDecimal("435.8"),
-                "EXCHANGE LIMIT",
-                new BigDecimal("435.8"),
-                1,
-                new BigDecimal("-0.0104592"),
-                "USD");
+                new BitfinexWebSocketAuthTrade(
+                        262861164L,
+                        "tETHUSD",
+                        1530187145559L,
+                        13787457748L,
+                        new Double("-0.04"),
+                        new Double("435.8"),
+                        "EXCHANGE LIMIT",
+                        new Double("435.8"),
+                        1,
+                        new Double("-0.0104592"),
+                        "USD");
         test.assertValue(expected);
     }
 
@@ -125,8 +120,8 @@ public class BitfinexStreamingServiceTest {
                 new BitfinexWebSocketAuthBalance(
                         "exchange",
                         "ETH",
-                        new BigDecimal("0.38772"),
-                        BigDecimal.ZERO,
+                        new Double("0.38772"),
+                        0d,
                         null
                 );
 
@@ -134,8 +129,8 @@ public class BitfinexStreamingServiceTest {
                 new BitfinexWebSocketAuthBalance(
                         "exchange",
                         "USD",
-                        new BigDecimal("69.4747619"),
-                        BigDecimal.ZERO,
+                        new Double("69.4747619"),
+                        0d,
                         null
                 );
         test.assertNoErrors();
@@ -153,8 +148,8 @@ public class BitfinexStreamingServiceTest {
         BitfinexWebSocketAuthBalance balance = new BitfinexWebSocketAuthBalance(
                 "exchange",
                 "USD",
-                new BigDecimal("78.5441867"),
-                BigDecimal.ZERO,
+                new Double("78.5441867"),
+                0d,
                 null
         );
 

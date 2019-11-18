@@ -20,7 +20,6 @@ import org.knowm.xchange.kraken.dto.trade.KrakenType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -77,11 +76,11 @@ public class KrakenStreamingMarketDataService implements StreamingMarketDataServ
                             new KrakenPublicOrder(bd(tickerItems.get("a"), 0), bd(tickerItems.get("a"), 2), 0),
                             new KrakenPublicOrder(bd(tickerItems.get("b"), 0), bd(tickerItems.get("b"), 2), 0),
                             new KrakenPublicOrder(bd(tickerItems.get("c"), 0), bd(tickerItems.get("b"), 2), 0),
-                            new BigDecimal[]{bd(tickerItems.get("v"), 0), bd(tickerItems.get("v"), 1)},
-                            new BigDecimal[]{bd(tickerItems.get("p"), 0), bd(tickerItems.get("p"), 1)},
-                            new BigDecimal[]{bd(tickerItems.get("t"), 0), bd(tickerItems.get("t"), 1)},
-                            new BigDecimal[]{bd(tickerItems.get("l"), 0), bd(tickerItems.get("l"), 1)},
-                            new BigDecimal[]{bd(tickerItems.get("h"), 0), bd(tickerItems.get("h"), 1)},
+                            new Double[]{bd(tickerItems.get("v"), 0), bd(tickerItems.get("v"), 1)},
+                            new Double[]{bd(tickerItems.get("p"), 0), bd(tickerItems.get("p"), 1)},
+                            new Double[]{bd(tickerItems.get("t"), 0), bd(tickerItems.get("t"), 1)},
+                            new Double[]{bd(tickerItems.get("l"), 0), bd(tickerItems.get("l"), 1)},
+                            new Double[]{bd(tickerItems.get("h"), 0), bd(tickerItems.get("h"), 1)},
                             bd(tickerItems.get("o"), 0)
                     );
                     return KrakenAdapters.adaptTicker(krakenTicker, currencyPair);
@@ -134,8 +133,8 @@ public class KrakenStreamingMarketDataService implements StreamingMarketDataServ
         return subscriptionName + KRAKEN_CHANNEL_DELIMITER + pair;
     }
 
-    private BigDecimal bd(List list, int index) {
-        return getValue(list, index, BigDecimal.class);
+    private Double bd(List list, int index) {
+        return getValue(list, index, Double.class);
     }
 
     @SuppressWarnings("unchecked")

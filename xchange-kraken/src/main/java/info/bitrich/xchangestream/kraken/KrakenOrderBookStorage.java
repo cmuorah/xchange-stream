@@ -4,7 +4,6 @@ import info.bitrich.xchangestream.kraken.dto.KrakenOrderBook;
 import org.knowm.xchange.kraken.dto.marketdata.KrakenDepth;
 import org.knowm.xchange.kraken.dto.marketdata.KrakenPublicOrder;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -17,15 +16,15 @@ import static java.util.Collections.reverseOrder;
  */
 public class KrakenOrderBookStorage {
 
-    private TreeMap<BigDecimal, KrakenPublicOrder> asks;
-    private TreeMap<BigDecimal, KrakenPublicOrder> bids;
-
     private final int maxDepth;
+    private TreeMap<Double, KrakenPublicOrder> asks;
+    private TreeMap<Double, KrakenPublicOrder> bids;
 
     /**
      * Constructor is used for snapshots only
+     *
      * @param orderBookUpdate order book update items
-     * @param maxDepth order book size can rise up, so depth value need for order book truncating
+     * @param maxDepth        order book size can rise up, so depth value need for order book truncating
      */
     public KrakenOrderBookStorage(KrakenOrderBook orderBookUpdate, int maxDepth) {
         this.maxDepth = maxDepth;
@@ -34,11 +33,12 @@ public class KrakenOrderBookStorage {
 
     /**
      * Create order book from snapshot
+     *
      * @param orderBookUpdate order book snapshot
      */
     private void createFromLevels(KrakenOrderBook orderBookUpdate) {
-        this.asks = new TreeMap<>(BigDecimal::compareTo);
-        this.bids = new TreeMap<>(reverseOrder(BigDecimal::compareTo));
+        this.asks = new TreeMap<>(Double::compareTo);
+        this.bids = new TreeMap<>(reverseOrder(Double::compareTo));
 
         for (KrakenPublicOrder orderBookItem : orderBookUpdate.getAsk()) {
             asks.put(orderBookItem.getPrice(), orderBookItem);
@@ -51,6 +51,7 @@ public class KrakenOrderBookStorage {
 
     /**
      * Converting to Kraken XChange format
+     *
      * @return
      */
     public synchronized KrakenDepth toKrakenDepth() {
@@ -61,6 +62,7 @@ public class KrakenOrderBookStorage {
 
     /**
      * Order book incremental update
+     *
      * @param orderBookUpdate order book update
      */
     public synchronized void updateOrderBook(KrakenOrderBook orderBookUpdate) {
@@ -68,10 +70,10 @@ public class KrakenOrderBookStorage {
         updateOrderBookItems(orderBookUpdate.getBid(), bids);
     }
 
-    private void updateOrderBookItems(KrakenPublicOrder[] itemsToUpdate, Map<BigDecimal, KrakenPublicOrder> localItems) {
+    private void updateOrderBookItems(KrakenPublicOrder[] itemsToUpdate, Map<Double, KrakenPublicOrder> localItems) {
         for (KrakenPublicOrder askToUpdate : itemsToUpdate) {
             localItems.remove(askToUpdate.getPrice());
-            if (askToUpdate.getVolume().compareTo(BigDecimal.ZERO) != 0) {
+            if (askToUpdate.getVolume().compareTo(0d) != 0) {
                 localItems.put(askToUpdate.getPrice(), askToUpdate);
             }
         }

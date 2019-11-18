@@ -6,9 +6,7 @@ import org.knowm.xchange.currency.CurrencyPair;
 import org.knowm.xchange.dto.Order;
 import org.knowm.xchange.gemini.v1.dto.marketdata.GeminiTrade;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -36,6 +34,22 @@ public class GeminiWebSocketTransaction {
         this.events = events;
     }
 
+    private static GeminiLimitOrder toGeminiLimitOrder(JsonNode jsonEvent) {
+        Double price = Double.parseDouble(jsonEvent.get("price").asText());
+        Double amount = Double.parseDouble(jsonEvent.get("remaining").asText());
+        Double timestamp = System.currentTimeMillis() / 1000.0;
+        Order.OrderType side = jsonEvent.get("side").asText().equals("ask") ? Order.OrderType.ASK : Order.OrderType.BID;
+        return new GeminiLimitOrder(side, price, amount, timestamp);
+    }
+
+    private static GeminiTrade toGeminiTrade(JsonNode jsonEvent, long timestamp) {
+        long tid = Long.parseLong(jsonEvent.get("tid").asText());
+        Double price = Double.parseDouble(jsonEvent.get("price").asText());
+        Double amount = Double.parseDouble(jsonEvent.get("amount").asText());
+        String takerSide = jsonEvent.get("makerSide").asText().equals("ask") ? "buy" : "sell";
+        return new GeminiTrade(price, amount, timestamp, "gemini", tid, takerSide);
+    }
+
     public String getType() {
         return type;
     }
@@ -60,14 +74,6 @@ public class GeminiWebSocketTransaction {
         return events;
     }
 
-    private static GeminiLimitOrder toGeminiLimitOrder(JsonNode jsonEvent) {
-        BigDecimal price = new BigDecimal(jsonEvent.get("price").asText());
-        BigDecimal amount = new BigDecimal(jsonEvent.get("remaining").asText());
-        BigDecimal timestamp = new BigDecimal((new Date().getTime() / 1000));
-        Order.OrderType side = jsonEvent.get("side").asText().equals("ask") ? Order.OrderType.ASK : Order.OrderType.BID;
-        return new GeminiLimitOrder(side, price, amount, timestamp);
-    }
-
     public GeminiLimitOrder[] toGeminiLimitOrdersUpdate() {
         List<GeminiLimitOrder> levels = new ArrayList<>(1000);
         for (JsonNode jsonEvent : events) {
@@ -81,7 +87,7 @@ public class GeminiWebSocketTransaction {
             }
         }
 
-        return levels.toArray(new GeminiLimitOrder[levels.size()]);
+        return levels.toArray(new GeminiLimitOrder[0]);
     }
 
     public GeminiOrderbook toGeminiOrderbook(CurrencyPair currencyPair) {
@@ -91,16 +97,8 @@ public class GeminiWebSocketTransaction {
         return orderbook;
     }
 
-    private static GeminiTrade toGeminiTrade(JsonNode jsonEvent, long timestamp) {
-        long tid = Long.valueOf(jsonEvent.get("tid").asText());
-        BigDecimal price = new BigDecimal(jsonEvent.get("price").asText());
-        BigDecimal amount = new BigDecimal(jsonEvent.get("amount").asText());
-        String takerSide = jsonEvent.get("makerSide").asText().equals("ask") ? "buy" : "sell";
-        return new GeminiTrade(price, amount, timestamp, "gemini", tid, takerSide);
-    }
-
     public GeminiTrade[] toGeminiTrades() {
-        long timestamp = Long.valueOf(this.timestamp);
+        long timestamp = Long.parseLong(this.timestamp);
         List<GeminiTrade> trades = new ArrayList<>(1000);
         for (JsonNode jsonEvent : events) {
             if (jsonEvent.get("type").asText().equals("trade")) {
@@ -108,7 +106,6 @@ public class GeminiWebSocketTransaction {
                 trades.add(trade);
             }
         }
-
-        return trades.toArray(new GeminiTrade[trades.size()]);
+        return trades.toArray(new GeminiTrade[0]);
     }
 }

@@ -3,12 +3,10 @@ package info.bitrich.xchangestream.binance.dto;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.InputStream;
-import java.math.BigDecimal;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
@@ -36,8 +34,8 @@ public class TradeBinanceWebSocketTransactionTest {
         assertThat(rawTrade.getSymbol()).isEqualTo("BNBBTC");
         assertThat(rawTrade.getTradeId()).isEqualByComparingTo(12345L);
 
-        assertThat(rawTrade.getPrice()).isEqualByComparingTo(BigDecimal.valueOf(0.001));
-        assertThat(rawTrade.getQuantity()).isEqualByComparingTo(BigDecimal.valueOf(100));
+        assertThat(rawTrade.getPrice()).isEqualByComparingTo(0.001);
+        assertThat(rawTrade.getQuantity()).isEqualByComparingTo(100d);
         assertThat(rawTrade.getBuyerOrderId()).isEqualByComparingTo(88L);
         assertThat(rawTrade.getSellerOrderId()).isEqualByComparingTo(50L);
         assertThat(rawTrade.getTimestamp()).isEqualByComparingTo(123456785L);
