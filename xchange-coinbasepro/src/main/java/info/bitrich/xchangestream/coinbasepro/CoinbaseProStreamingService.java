@@ -3,10 +3,10 @@ package info.bitrich.xchangestream.coinbasepro;
 import static io.netty.util.internal.StringUtil.isNullOrEmpty;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
 
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import org.knowm.xchange.coinbasepro.dto.account.CoinbaseProWebsocketAuthData;
 import org.knowm.xchange.currency.CurrencyPair;
 import org.slf4j.Logger;
@@ -31,7 +31,7 @@ public class CoinbaseProStreamingService extends JsonNettyStreamingService {
     private static final String SUBSCRIBE = "subscribe";
     private static final String UNSUBSCRIBE = "unsubscribe";
     private static final String SHARE_CHANNEL_NAME = "ALL";
-    private final Map<String, Observable<JsonNode>> subscriptions = new HashMap<>();
+    private final Map<String, Observable<JsonNode>> subscriptions = new Object2ObjectOpenHashMap<>();
     private ProductSubscription product = null;
     private final Supplier<CoinbaseProWebsocketAuthData> authData;
 
@@ -79,7 +79,7 @@ public class CoinbaseProStreamingService extends JsonNettyStreamingService {
         String channelName = currencyPair.base.toString() + "-" + currencyPair.counter.toString();
         final ObjectMapper mapper = StreamingObjectMapperHelper.getObjectMapper();
         return subscribeChannel(channelName)
-                .map(s -> mapper.readValue(s.toString(), CoinbaseProWebSocketTransaction.class))
+                .map(s -> mapper.treeToValue(s, CoinbaseProWebSocketTransaction.class))
                 .filter(t -> channelName.equals(t.getProductId()))
                 .filter(t -> !isNullOrEmpty(t.getType()));
     }

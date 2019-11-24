@@ -19,6 +19,11 @@ import java.util.TimeZone;
 public class CoinbaseProStreamingAdapters {
 
     private static final Logger LOG = LoggerFactory.getLogger(CoinbaseProStreamingAdapters.class);
+    private static final ThreadLocal<SimpleDateFormat> formatter = ThreadLocal.withInitial(() -> {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
+        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+        return sdf;
+    });
 
     /**
      * TODO this clearly isn't good enough. We need an initial snapshot that these
@@ -110,9 +115,7 @@ public class CoinbaseProStreamingAdapters {
             }
         }
         try {
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
-            dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
-            return dateFormat.parse(modified);
+            return formatter.get().parse(modified);
         } catch (ParseException e) {
             LOG.warn("unable to parse rawDate={} modified={}", rawDate, modified, e);
             return null;

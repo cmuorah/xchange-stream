@@ -3,6 +3,8 @@ package info.bitrich.xchangestream.coinbasepro;
 import info.bitrich.xchangestream.coinbasepro.dto.CoinbaseProWebSocketTransaction;
 import info.bitrich.xchangestream.core.StreamingMarketDataService;
 import io.reactivex.Observable;
+import it.unimi.dsi.fastutil.doubles.Double2DoubleRBTreeMap;
+import it.unimi.dsi.fastutil.doubles.DoubleComparators;
 import org.knowm.xchange.coinbasepro.dto.marketdata.CoinbaseProProductTicker;
 import org.knowm.xchange.coinbasepro.dto.marketdata.CoinbaseProTrade;
 import org.knowm.xchange.currency.CurrencyPair;
@@ -14,7 +16,6 @@ import org.knowm.xchange.dto.marketdata.Trades;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
-import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static org.knowm.xchange.coinbasepro.CoinbaseProAdapters.adaptTicker;
@@ -39,27 +40,26 @@ public class CoinbaseProStreamingMarketDataService implements StreamingMarketDat
         this.service = service;
     }
 
-    private boolean containsPair(List<CurrencyPair> pairs, CurrencyPair pair) {
+    private boolean doesNotContainPair(List<CurrencyPair> pairs, CurrencyPair pair) {
         for (CurrencyPair item : pairs) {
             if (item.compareTo(pair) == 0) {
-                return true;
+                return false;
             }
         }
-
-        return false;
+        return true;
     }
 
     @Override
     public Observable<OrderBook> getOrderBook(CurrencyPair currencyPair, Object... args) {
-        if (!containsPair(service.getProduct().getOrderBook(), currencyPair))
+        if (doesNotContainPair(service.getProduct().getOrderBook(), currencyPair))
             throw new UnsupportedOperationException(String.format("The currency pair %s is not subscribed for orderbook", currencyPair));
         final int maxDepth = (args.length > 0 && args[0] instanceof Number) ? ((Number) args[0]).intValue() : 100;
         return getRawWebSocketTransactions(currencyPair, false)
                 .filter(message -> message.getType().equals(SNAPSHOT) || message.getType().equals(L2UPDATE))
                 .map(s -> {
                     if (s.getType().equals(SNAPSHOT)) {
-                        bids.put(currencyPair, new TreeMap<>(java.util.Collections.reverseOrder()));
-                        asks.put(currencyPair, new TreeMap<>());
+                        bids.put(currencyPair, new Double2DoubleRBTreeMap(DoubleComparators.OPPOSITE_COMPARATOR));
+                        asks.put(currencyPair, new Double2DoubleRBTreeMap(DoubleComparators.NATURAL_COMPARATOR));
                     }
                     return s.toOrderBook(
                             bids.get(currencyPair),
@@ -77,7 +77,7 @@ public class CoinbaseProStreamingMarketDataService implements StreamingMarketDat
      * @return an Observable of {@link CoinbaseProProductTicker}.
      */
     public Observable<CoinbaseProProductTicker> getRawTicker(CurrencyPair currencyPair, Object... args) {
-        if (!containsPair(service.getProduct().getTicker(), currencyPair))
+        if (doesNotContainPair(service.getProduct().getTicker(), currencyPair))
             throw new UnsupportedOperationException(String.format("The currency pair %s is not subscribed for ticker", currencyPair));
         return getRawWebSocketTransactions(currencyPair, true)
                 .filter(message -> message.getType().equals(TICKER))
@@ -95,7 +95,7 @@ public class CoinbaseProStreamingMarketDataService implements StreamingMarketDat
      */
     @Override
     public Observable<Ticker> getTicker(CurrencyPair currencyPair, Object... args) {
-        if (!containsPair(service.getProduct().getTicker(), currencyPair))
+        if (doesNotContainPair(service.getProduct().getTicker(), currencyPair))
             throw new UnsupportedOperationException(String.format("The currency pair %s is not subscribed for ticker", currencyPair));
         return getRawWebSocketTransactions(currencyPair, true)
                 .filter(message -> message.getType().equals(TICKER))
@@ -104,7 +104,7 @@ public class CoinbaseProStreamingMarketDataService implements StreamingMarketDat
 
     @Override
     public Observable<Trade> getTrades(CurrencyPair currencyPair, Object... args) {
-        if (!containsPair(service.getProduct().getTrades(), currencyPair))
+        if (doesNotContainPair(service.getProduct().getTrades(), currencyPair))
             throw new UnsupportedOperationException(String.format("The currency pair %s is not subscribed for trades", currencyPair));
         return getRawWebSocketTransactions(currencyPair, true)
                 .filter(message -> message.getType().equals(MATCH))
