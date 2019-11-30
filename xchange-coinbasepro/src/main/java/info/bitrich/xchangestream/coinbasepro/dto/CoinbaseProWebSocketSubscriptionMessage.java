@@ -30,7 +30,7 @@ public class CoinbaseProWebSocketSubscriptionMessage {
     public static final String PASSPHRASE = "passphrase";
     public static final String TIMESTAMP = "timestamp";
 
-    class CoinbaseProProductSubsctiption {
+    static class CoinbaseProProductSubsctiption {
         @JsonProperty(NAME)
         private final String name;
 
