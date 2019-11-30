@@ -1,8 +1,13 @@
 package info.bitrich.xchangestream.service.netty;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import net.openhft.chronicle.core.Jvm;
+
+import java.util.function.Function;
 
 /**
  * This class should be merged with ObjectMapperHelper from XStream..
@@ -28,4 +33,21 @@ public class StreamingObjectMapperHelper {
         return objectMapper;
     }
 
+    public static final Function<JsonNode, String> SERIALIZER = o -> {
+        try {
+            return objectMapper.writeValueAsString(o);
+        } catch (JsonProcessingException e) {
+            Jvm.rethrow(e);
+        }
+        return null;
+    };
+
+    public static final Function<String, JsonNode> PARSER = m -> {
+        try {
+            return objectMapper.readTree(m);
+        } catch (Exception e) {
+            Jvm.rethrow(e);
+        }
+        return null;
+    };
 }

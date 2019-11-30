@@ -2,22 +2,18 @@ package info.bitrich.xchangestream.gemini;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import info.bitrich.xchangestream.service.netty.JsonNettyStreamingService;
+import info.bitrich.xchangestream.service.netty.StreamingObjectMapperHelper;
 import org.knowm.xchange.currency.CurrencyPair;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
 
 /**
  * Created by Lukas Zaoralek on 15.11.17.
  */
-public class GeminiProductStreamingService extends JsonNettyStreamingService {
-    private static final Logger LOG = LoggerFactory.getLogger(GeminiProductStreamingService.class);
+public class GeminiProductStreamingService extends JsonNettyStreamingService<JsonNode> {
 
     private final CurrencyPair currencyPair;
 
     public GeminiProductStreamingService(String symbolUrl, CurrencyPair currencyPair) {
-        super(symbolUrl, Integer.MAX_VALUE);
+        super(symbolUrl, Integer.MAX_VALUE, StreamingObjectMapperHelper.SERIALIZER, StreamingObjectMapperHelper.PARSER);
         this.currencyPair = currencyPair;
     }
 
@@ -27,17 +23,17 @@ public class GeminiProductStreamingService extends JsonNettyStreamingService {
     }
 
     @Override
-    protected String getChannelNameFromMessage(JsonNode message) throws IOException {
+    protected String getChannelNameFromMessage(JsonNode message) {
         return currencyPair.toString();
     }
 
     @Override
-    public String getSubscribeMessage(String channelName, Object... args) throws IOException {
+    public String getSubscribeMessage(String channelName, Object... args) {
         return null;
     }
 
     @Override
-    public String getUnsubscribeMessage(String channelName) throws IOException {
+    public String getUnsubscribeMessage(String channelName) {
         return null;
     }
 }

@@ -22,9 +22,9 @@ import java.util.Map;
 /**
  * Created by Lukas Zaoralek on 10.11.17.
  */
-public class PoloniexStreamingService extends JsonNettyStreamingService {
+public class PoloniexStreamingService extends JsonNettyStreamingService<JsonNode> {
     private static final Logger LOG = LoggerFactory.getLogger(PoloniexStreamingService.class);
-
+    private final ObjectMapper objectMapper = StreamingObjectMapperHelper.getObjectMapper();
     private static final String HEARTBEAT = "1010";
 
     private final Map<String, String> subscribedChannels = new HashMap<>();
@@ -32,7 +32,7 @@ public class PoloniexStreamingService extends JsonNettyStreamingService {
 
 
     public PoloniexStreamingService(String apiUrl) {
-        super(apiUrl, Integer.MAX_VALUE);
+        super(apiUrl, Integer.MAX_VALUE, StreamingObjectMapperHelper.SERIALIZER, StreamingObjectMapperHelper.PARSER);
     }
 
     @Override
@@ -115,19 +115,13 @@ public class PoloniexStreamingService extends JsonNettyStreamingService {
 
     @Override
     public String getSubscribeMessage(String channelName, Object... args) throws IOException {
-        PoloniexWebSocketSubscriptionMessage subscribeMessage = new PoloniexWebSocketSubscriptionMessage("subscribe",
-                channelName);
-
-        final ObjectMapper mapper = StreamingObjectMapperHelper.getObjectMapper();
+        PoloniexWebSocketSubscriptionMessage subscribeMessage = new PoloniexWebSocketSubscriptionMessage("subscribe", channelName);
         return objectMapper.writeValueAsString(subscribeMessage);
     }
 
     @Override
     public String getUnsubscribeMessage(String channelName) throws IOException {
-        PoloniexWebSocketSubscriptionMessage subscribeMessage = new PoloniexWebSocketSubscriptionMessage("unsubscribe",
-                channelName);
-
-        final ObjectMapper mapper = StreamingObjectMapperHelper.getObjectMapper();
+        PoloniexWebSocketSubscriptionMessage subscribeMessage = new PoloniexWebSocketSubscriptionMessage("unsubscribe", channelName);
         return objectMapper.writeValueAsString(subscribeMessage);
     }
 

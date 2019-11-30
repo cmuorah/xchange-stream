@@ -1,17 +1,5 @@
 package info.bitrich.xchangestream.coinbasepro;
 
-import static io.netty.util.internal.StringUtil.isNullOrEmpty;
-
-import java.io.IOException;
-import java.util.Map;
-import java.util.function.Supplier;
-
-import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
-import org.knowm.xchange.coinbasepro.dto.account.CoinbaseProWebsocketAuthData;
-import org.knowm.xchange.currency.CurrencyPair;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import info.bitrich.xchangestream.coinbasepro.dto.CoinbaseProWebSocketSubscriptionMessage;
@@ -25,20 +13,31 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.websocketx.WebSocketClientHandshaker;
 import io.netty.handler.codec.http.websocketx.extensions.WebSocketClientExtensionHandler;
 import io.reactivex.Observable;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import org.knowm.xchange.coinbasepro.dto.account.CoinbaseProWebsocketAuthData;
+import org.knowm.xchange.currency.CurrencyPair;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class CoinbaseProStreamingService extends JsonNettyStreamingService {
+import java.io.IOException;
+import java.util.Map;
+import java.util.function.Supplier;
+
+import static io.netty.util.internal.StringUtil.isNullOrEmpty;
+
+public class CoinbaseProStreamingService extends JsonNettyStreamingService<JsonNode> {
     private static final Logger LOG = LoggerFactory.getLogger(CoinbaseProStreamingService.class);
     private static final String SUBSCRIBE = "subscribe";
     private static final String UNSUBSCRIBE = "unsubscribe";
     private static final String SHARE_CHANNEL_NAME = "ALL";
+    private final ObjectMapper objectMapper = StreamingObjectMapperHelper.getObjectMapper();
     private final Map<String, Observable<JsonNode>> subscriptions = new Object2ObjectOpenHashMap<>();
-    private ProductSubscription product = null;
     private final Supplier<CoinbaseProWebsocketAuthData> authData;
-
+    private ProductSubscription product = null;
     private WebSocketClientHandler.WebSocketMessageHandler channelInactiveHandler = null;
 
     public CoinbaseProStreamingService(String apiUrl, Supplier<CoinbaseProWebsocketAuthData> authData) {
-        super(apiUrl, Integer.MAX_VALUE);
+        super(apiUrl, Integer.MAX_VALUE, StreamingObjectMapperHelper.SERIALIZER, StreamingObjectMapperHelper.PARSER);
         this.authData = authData;
     }
 

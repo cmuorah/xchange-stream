@@ -26,17 +26,17 @@ import static info.bitrich.xchangestream.kraken.dto.enums.KrakenEventType.subscr
 /**
  * @author makarid, pchertalev
  */
-public class KrakenStreamingService extends JsonNettyStreamingService {
+public class KrakenStreamingService extends JsonNettyStreamingService<JsonNode> {
 
     private static final Logger LOG = LoggerFactory.getLogger(KrakenStreamingService.class);
     private static final String EVENT = "event";
     private final Map<Integer, String> channels = new ConcurrentHashMap<>();
-    private ObjectMapper mapper = StreamingObjectMapperHelper.getObjectMapper();
+    private final ObjectMapper objectMapper = StreamingObjectMapperHelper.getObjectMapper();
 
     private final Map<Integer, String> subscriptionRequestMap = new ConcurrentHashMap<>();
 
     public KrakenStreamingService(String apiUrl) {
-        super(apiUrl, Integer.MAX_VALUE);
+        super(apiUrl, Integer.MAX_VALUE, StreamingObjectMapperHelper.SERIALIZER, StreamingObjectMapperHelper.PARSER);
     }
 
     @Override
@@ -57,11 +57,11 @@ public class KrakenStreamingService extends JsonNettyStreamingService {
                         LOG.debug("Heartbeat received");
                         break;
                     case systemStatus:
-                        KrakenSystemStatus systemStatus = mapper.treeToValue(message, KrakenSystemStatus.class);
+                        KrakenSystemStatus systemStatus = objectMapper.treeToValue(message, KrakenSystemStatus.class);
                         LOG.info("System status: {}", systemStatus);
                         break;
                     case subscriptionStatus:
-                        KrakenSubscriptionStatusMessage statusMessage = mapper.treeToValue(message, KrakenSubscriptionStatusMessage.class);
+                        KrakenSubscriptionStatusMessage statusMessage = objectMapper.treeToValue(message, KrakenSubscriptionStatusMessage.class);
                         channelName = subscriptionRequestMap.remove(statusMessage.getReqid());
                         switch (statusMessage.getStatus()) {
                             case subscribed:
@@ -95,7 +95,7 @@ public class KrakenStreamingService extends JsonNettyStreamingService {
     }
 
     @Override
-    protected String getChannelNameFromMessage(JsonNode message) throws IOException {
+    protected String getChannelNameFromMessage(JsonNode message) {
         String channelName = null;
         if (message.has("channelID")) {
             channelName = channels.get(message.get("channelID").asInt());

@@ -1,29 +1,32 @@
 package info.bitrich.xchangestream.service.netty;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.time.Duration;
+import java.util.function.Function;
 
-public abstract class JsonNettyStreamingService extends NettyStreamingService<JsonNode> {
+public abstract class JsonNettyStreamingService<T> extends NettyStreamingService<T> {
     private static final Logger LOG = LoggerFactory.getLogger(JsonNettyStreamingService.class);
-    protected final ObjectMapper objectMapper = StreamingObjectMapperHelper.getObjectMapper();
+    private final Function<T, String> serializer;
+    private final Function<String, T> parser;
 
-    public JsonNettyStreamingService(String apiUrl) {
+    public JsonNettyStreamingService(String apiUrl, Function<T, String> serializer, Function<String, T> parser) {
         super(apiUrl);
+        this.serializer = serializer;
+        this.parser = parser;
     }
 
-    public JsonNettyStreamingService(String apiUrl, int maxFramePayloadLength) {
+    public JsonNettyStreamingService(String apiUrl, int maxFramePayloadLength, Function<T, String> serializer, Function<String, T> parser) {
         super(apiUrl, maxFramePayloadLength);
+        this.serializer = serializer;
+        this.parser = parser;
     }
 
-    public JsonNettyStreamingService(String apiUrl, int maxFramePayloadLength, Duration connectionTimeout, Duration retryDuration, int idleTimeoutSeconds) {
+    public JsonNettyStreamingService(String apiUrl, int maxFramePayloadLength, Duration connectionTimeout, Duration retryDuration, int idleTimeoutSeconds, Function<T, String> serializer, Function<String, T> parser) {
         super(apiUrl, maxFramePayloadLength, connectionTimeout, retryDuration, idleTimeoutSeconds);
+        this.serializer = serializer;
+        this.parser = parser;
     }
 
     public boolean processArrayMassageSeparately() {
@@ -33,30 +36,21 @@ public abstract class JsonNettyStreamingService extends NettyStreamingService<Js
     @Override
     public void messageHandler(String message) {
         LOG.debug("Received message: {}", message);
-        JsonNode jsonNode;
+        T jsonNode;
 
         // Parse incoming message to JSON
         try {
-            jsonNode = objectMapper.readTree(message);
-        } catch (IOException e) {
-            LOG.error("Error parsing incoming message to JSON: {}", message);
-            return;
-        }
-
-        if (processArrayMassageSeparately() && jsonNode.isArray()) {
-            // In case of array - handle every message separately.
-            for (JsonNode node : jsonNode) {
-                handleMessage(node);
-            }
-        } else {
+            jsonNode = parser.apply(message);
             handleMessage(jsonNode);
+        } catch (Exception e) {
+            LOG.error("Error parsing incoming message to JSON: {}", message);
         }
     }
 
-    protected void sendObjectMessage(Object message) {
+    protected void sendObjectMessage(T message) {
         try {
-            sendMessage(objectMapper.writeValueAsString(message));
-        } catch (JsonProcessingException e) {
+            sendMessage(serializer.apply(message));
+        } catch (Exception e) {
             LOG.error("Error creating json message: {}", e.getMessage());
         }
     }

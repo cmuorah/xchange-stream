@@ -1,9 +1,11 @@
 package info.bitrich.xchangestream.bitstamp.v2;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import info.bitrich.xchangestream.bitstamp.v2.dto.BitstampWebSocketData;
 import info.bitrich.xchangestream.bitstamp.v2.dto.BitstampWebSocketSubscriptionMessage;
 import info.bitrich.xchangestream.service.netty.JsonNettyStreamingService;
+import info.bitrich.xchangestream.service.netty.StreamingObjectMapperHelper;
 import io.netty.handler.codec.http.websocketx.extensions.WebSocketClientExtensionHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,15 +16,15 @@ import java.io.IOException;
  * Bitstamp WebSocket V2 streaming service implementation
  * Created by Pavel Chertalev on 15.03.2018.
  */
-public class BitstampStreamingService extends JsonNettyStreamingService {
+public class BitstampStreamingService extends JsonNettyStreamingService<JsonNode> {
     private static final Logger LOG = LoggerFactory.getLogger(BitstampStreamingService.class);
-
+    private final ObjectMapper objectMapper = StreamingObjectMapperHelper.getObjectMapper();
     private static final String JSON_CHANNEL = "channel";
     private static final String JSON_EVENT = "event";
     private static final String JSON_DATA = "data";
 
     public BitstampStreamingService(String apiUrl) {
-        super(apiUrl, Integer.MAX_VALUE);
+        super(apiUrl, Integer.MAX_VALUE, StreamingObjectMapperHelper.SERIALIZER, StreamingObjectMapperHelper.PARSER);
     }
 
     @Override

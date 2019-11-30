@@ -1,5 +1,6 @@
 package info.bitrich.xchangestream.bitfinex;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -51,7 +52,7 @@ import si.mazi.rescu.SynchronizedValueFactory;
 /**
  * Created by Lukas Zaoralek on 7.11.17.
  */
-public class BitfinexStreamingService extends JsonNettyStreamingService {
+public class BitfinexStreamingService extends JsonNettyStreamingService<JsonNode> {
 
     private static final Logger LOG = LoggerFactory.getLogger(BitfinexStreamingService.class);
 
@@ -90,13 +91,12 @@ public class BitfinexStreamingService extends JsonNettyStreamingService {
 
     private final Map<String, String> subscribedChannels = new HashMap<>();
     private final SynchronizedValueFactory<Long> nonceFactory;
-
+    private final ObjectMapper objectMapper = StreamingObjectMapperHelper.getObjectMapper();
     private final BlockingQueue<String> calculationQueue = new LinkedBlockingQueue<>();
     private Disposable calculator;
 
-    public BitfinexStreamingService(String apiUrl,
-                                    SynchronizedValueFactory<Long> nonceFactory) {
-        super(apiUrl, Integer.MAX_VALUE);
+    public BitfinexStreamingService(String apiUrl, SynchronizedValueFactory<Long> nonceFactory) {
+        super(apiUrl, Integer.MAX_VALUE, StreamingObjectMapperHelper.SERIALIZER, StreamingObjectMapperHelper.PARSER);
         this.nonceFactory = nonceFactory;
     }
 
@@ -225,7 +225,7 @@ public class BitfinexStreamingService extends JsonNettyStreamingService {
                     subjectBalance.onNext(balance);
                 break;
             default:
-                LOG.debug("Unknown Bitfinex authenticated message type {}. Content=", type, object);
+                LOG.debug("Unknown Bitfinex authenticated message type {}. Content={}", type, object);
         }
     }
 
@@ -319,7 +319,11 @@ public class BitfinexStreamingService extends JsonNettyStreamingService {
         BitfinexWebSocketAuth message = new BitfinexWebSocketAuth(
                 apiKey, payload, String.valueOf(nonce), signature.toLowerCase()
         );
-        sendObjectMessage(message);
+        try {
+            sendMessage(objectMapper.writeValueAsString(message));
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
     }
 
     Observable<BitfinexWebSocketAuthOrder> getAuthenticatedOrders() {
@@ -359,7 +363,7 @@ public class BitfinexStreamingService extends JsonNettyStreamingService {
      *
      * <p>Details: https://docs.bitfinex.com/v2/docs/changelog#section--calc-input-message</p>
      */
-    private void requestCalcs() {
+    private void requestCalcs() throws JsonProcessingException {
         Set<String> currencies = new HashSet<>();
         do {
             String nextRequest = calculationQueue.poll();
@@ -382,6 +386,6 @@ public class BitfinexStreamingService extends JsonNettyStreamingService {
 
         LOG.debug("Requesting full calculated balances for: {} in {}", currencies, WALLETS);
 
-        sendObjectMessage(message);
+        sendMessage(objectMapper.writeValueAsString(message));
     }
 }

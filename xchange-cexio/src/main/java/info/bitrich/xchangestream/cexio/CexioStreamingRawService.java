@@ -17,35 +17,35 @@ import org.knowm.xchange.dto.Order;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class CexioStreamingRawService extends JsonNettyStreamingService {
+public class CexioStreamingRawService extends JsonNettyStreamingService<JsonNode> {
 
   private static final Logger LOG = LoggerFactory.getLogger(CexioStreamingRawService.class);
 
-  public static final String CONNECTED = "connected";
+  private static final String CONNECTED = "connected";
   public static final String AUTH = "auth";
-  public static final String PING = "ping";
+  private static final String PING = "ping";
   public static final String PONG = "pong";
-  public static final String ORDER = "order";
-  public static final String TRANSACTION = "tx";
-  public static final String ORDERBOOK = "order-book-subscribe";
-  public static final String ORDERBOOK_UPDATE = "md_update";
+  private static final String ORDER = "order";
+  private static final String TRANSACTION = "tx";
+  private static final String ORDERBOOK = "order-book-subscribe";
+  private static final String ORDERBOOK_UPDATE = "md_update";
 
   private String apiKey;
   private String apiSecret;
-  private AuthCompletable authCompletable = new AuthCompletable();
+  private final AuthCompletable authCompletable = new AuthCompletable();
+  private final ObjectMapper objectMapper = StreamingObjectMapperHelper.getObjectMapper();
+  private final PublishSubject<Order> subjectOrder = PublishSubject.create();
+  private final PublishSubject<CexioWebSocketTransaction> subjectTransaction = PublishSubject.create();
 
-  private PublishSubject<Order> subjectOrder = PublishSubject.create();
-  private PublishSubject<CexioWebSocketTransaction> subjectTransaction = PublishSubject.create();
-
-  public CexioStreamingRawService(String apiUrl) {
-    super(apiUrl, Integer.MAX_VALUE);
+  CexioStreamingRawService(String apiUrl) {
+    super(apiUrl, Integer.MAX_VALUE, StreamingObjectMapperHelper.SERIALIZER, StreamingObjectMapperHelper.PARSER);
   }
 
-  public static String GetOrderBookChannelForCurrencyPair(CurrencyPair currencyPair) {
+  static String GetOrderBookChannelForCurrencyPair(CurrencyPair currencyPair) {
     return ORDERBOOK + "-" + currencyPair.toString();
   }
 
-  public static CurrencyPair GetCurrencyPairForChannelName(String channelName) {
+  private static CurrencyPair GetCurrencyPairForChannelName(String channelName) {
     return new CurrencyPair(channelName.substring(ORDERBOOK.length() + 1));
   }
 
@@ -69,18 +69,12 @@ public class CexioStreamingRawService extends JsonNettyStreamingService {
   }
 
   private Object GetEventSubscriptionData(String channelName, boolean isSubscribe, Object... args) {
-    switch (channelName) {
-      case ORDERBOOK:
-        {
-          CurrencyPair currencyPair = (CurrencyPair) args[0];
-          return new CexioWebSocketOrderBookSubscriptionData(currencyPair, isSubscribe);
-        }
-      default:
-        {
-          throw new IllegalArgumentException(
-              "Cannot get subscription data for unknown channel name " + channelName);
-        }
+    if (ORDERBOOK.equals(channelName)) {
+      CurrencyPair currencyPair = (CurrencyPair) args[0];
+      return new CexioWebSocketOrderBookSubscriptionData(currencyPair, isSubscribe);
     }
+    throw new IllegalArgumentException(
+            "Cannot get subscription data for unknown channel name " + channelName);
   }
 
   private static String getEventNameFromChannel(String channelName) {
@@ -131,15 +125,15 @@ public class CexioStreamingRawService extends JsonNettyStreamingService {
     private CompletableEmitter completableEmitter;
 
     @Override
-    public void subscribe(CompletableEmitter e) throws Exception {
+    public void subscribe(CompletableEmitter e) {
       this.completableEmitter = e;
     }
 
-    public void SignalAuthComplete() {
+    void SignalAuthComplete() {
       completableEmitter.onComplete();
     }
 
-    public void SignalError(String error) {
+    void SignalError(String error) {
       completableEmitter.onError(new IllegalStateException(error));
     }
   }
@@ -173,8 +167,7 @@ public class CexioStreamingRawService extends JsonNettyStreamingService {
                   authCompletable.SignalAuthComplete();
                 }
               } else {
-                String authErrorString =
-                    new String("Authentication error: " + response.getData().getError());
+                String authErrorString = "Authentication error: " + response.getData().getError();
                 LOG.error(authErrorString);
                 synchronized (authCompletable) {
                   authCompletable.SignalError(authErrorString);
@@ -254,11 +247,11 @@ public class CexioStreamingRawService extends JsonNettyStreamingService {
     }
   }
 
-  public void setApiKey(String apiKey) {
+  void setApiKey(String apiKey) {
     this.apiKey = apiKey;
   }
 
-  public void setApiSecret(String apiSecret) {
+  void setApiSecret(String apiSecret) {
     this.apiSecret = apiSecret;
   }
 
@@ -266,11 +259,11 @@ public class CexioStreamingRawService extends JsonNettyStreamingService {
     return objectMapper.treeToValue(message, valueType);
   }
 
-  public Observable<Order> getOrderData() {
+  Observable<Order> getOrderData() {
     return subjectOrder.share();
   }
 
-  public Observable<CexioWebSocketTransaction> getTransactions() {
+  Observable<CexioWebSocketTransaction> getTransactions() {
     return subjectTransaction.share();
   }
 }

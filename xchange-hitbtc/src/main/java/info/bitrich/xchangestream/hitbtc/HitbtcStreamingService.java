@@ -1,12 +1,12 @@
 package info.bitrich.xchangestream.hitbtc;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import info.bitrich.xchangestream.hitbtc.dto.HitbtcWebSocketBaseParams;
 import info.bitrich.xchangestream.hitbtc.dto.HitbtcWebSocketSubscriptionMessage;
 import info.bitrich.xchangestream.service.netty.JsonNettyStreamingService;
+import info.bitrich.xchangestream.service.netty.StreamingObjectMapperHelper;
 import io.netty.handler.codec.http.websocketx.extensions.WebSocketClientExtensionHandler;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
@@ -24,9 +24,9 @@ import java.util.stream.Stream;
 /**
  * Created by Pavel Chertalev on 15.03.2018.
  */
-public class HitbtcStreamingService extends JsonNettyStreamingService {
+public class HitbtcStreamingService extends JsonNettyStreamingService<JsonNode> {
     private static final Logger LOG = LoggerFactory.getLogger(HitbtcStreamingService.class);
-
+    private final ObjectMapper objectMapper = StreamingObjectMapperHelper.getObjectMapper();
     private static final String JSON_METHOD = "method";
     private static final String JSON_SYMBOL = "symbol";
     private static final String JSON_PARAMS = "params";
@@ -44,7 +44,7 @@ public class HitbtcStreamingService extends JsonNettyStreamingService {
 
 
     public HitbtcStreamingService(String apiUrl) {
-        super(apiUrl, Integer.MAX_VALUE);
+        super(apiUrl, Integer.MAX_VALUE, StreamingObjectMapperHelper.SERIALIZER, StreamingObjectMapperHelper.PARSER);
     }
 
     @Override

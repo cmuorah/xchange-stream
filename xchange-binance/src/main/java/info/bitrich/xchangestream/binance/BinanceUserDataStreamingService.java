@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import info.bitrich.xchangestream.binance.dto.BaseBinanceWebSocketTransaction.BinanceWebSocketTypes;
 import info.bitrich.xchangestream.service.netty.JsonNettyStreamingService;
 
+import info.bitrich.xchangestream.service.netty.StreamingObjectMapperHelper;
 import io.reactivex.Observable;
 
 import org.slf4j.Logger;
@@ -12,7 +13,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
-public class BinanceUserDataStreamingService extends JsonNettyStreamingService {
+public class BinanceUserDataStreamingService extends JsonNettyStreamingService<JsonNode> {
 
     private static final Logger LOG = LoggerFactory.getLogger(BinanceUserDataStreamingService.class);
 
@@ -22,7 +23,7 @@ public class BinanceUserDataStreamingService extends JsonNettyStreamingService {
     }
 
     private BinanceUserDataStreamingService(String url) {
-        super(url, Integer.MAX_VALUE);
+        super(url, Integer.MAX_VALUE, StreamingObjectMapperHelper.SERIALIZER, StreamingObjectMapperHelper.PARSER);
     }
 
     public Observable<JsonNode> subscribeChannel(BinanceWebSocketTypes eventType) {
@@ -41,12 +42,11 @@ public class BinanceUserDataStreamingService extends JsonNettyStreamingService {
             super.handleMessage(message);
         } catch (Exception e) {
             LOG.error("Error handling message: " + message, e);
-            return;
         }
     }
 
     @Override
-    protected String getChannelNameFromMessage(JsonNode message) throws IOException {
+    protected String getChannelNameFromMessage(JsonNode message) {
         return message.get("e").asText();
     }
 
@@ -57,7 +57,7 @@ public class BinanceUserDataStreamingService extends JsonNettyStreamingService {
     }
 
     @Override
-    public String getUnsubscribeMessage(String channelName) throws IOException {
+    public String getUnsubscribeMessage(String channelName) {
         // No op. Disconnecting from the web socket will cancel subscriptions.
         return null;
     }

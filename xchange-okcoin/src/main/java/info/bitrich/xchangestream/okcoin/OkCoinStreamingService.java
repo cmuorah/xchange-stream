@@ -21,17 +21,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.TimeUnit;
 import java.util.zip.Inflater;
 
-public class OkCoinStreamingService extends JsonNettyStreamingService {
+public class OkCoinStreamingService extends JsonNettyStreamingService<JsonNode> {
 
     private Observable<Long> pingPongSrc = Observable.interval(15, 15, TimeUnit.SECONDS);
-
+    private final ObjectMapper objectMapper = StreamingObjectMapperHelper.getObjectMapper();
     private Disposable pingPongSubscription;
 
     public OkCoinStreamingService(String apiUrl) {
-        super(apiUrl);
+        super(apiUrl, StreamingObjectMapperHelper.SERIALIZER, StreamingObjectMapperHelper.PARSER);
     }
 
     @Override
@@ -42,9 +43,7 @@ public class OkCoinStreamingService extends JsonNettyStreamingService {
                 if (pingPongSubscription != null && !pingPongSubscription.isDisposed()) {
                     pingPongSubscription.dispose();
                 }
-                pingPongSubscription = pingPongSrc.subscribe(o -> {
-                    this.sendMessage("{\"event\":\"ping\"}");
-                });
+                pingPongSubscription = pingPongSrc.subscribe(o -> this.sendMessage("{\"event\":\"ping\"}"));
                 completable.onComplete();
             } catch (Exception e) {
                 completable.onError(e);
@@ -53,7 +52,7 @@ public class OkCoinStreamingService extends JsonNettyStreamingService {
     }
 
     @Override
-    protected String getChannelNameFromMessage(JsonNode message) throws IOException {
+    protected String getChannelNameFromMessage(JsonNode message) {
         return message.get("channel").asText();
     }
 
@@ -61,7 +60,6 @@ public class OkCoinStreamingService extends JsonNettyStreamingService {
     public String getSubscribeMessage(String channelName, Object... args) throws IOException {
         WebSocketMessage webSocketMessage = new WebSocketMessage("addChannel", channelName);
 
-        final ObjectMapper mapper = StreamingObjectMapperHelper.getObjectMapper();
         return objectMapper.writeValueAsString(webSocketMessage);
     }
 
@@ -136,7 +134,7 @@ public class OkCoinStreamingService extends JsonNettyStreamingService {
                     byte[] result = new byte[1024];
                     while (!infl.finished()) {
                         int length = infl.inflate(result);
-                        appender.append(new String(result, 0, length, "UTF-8"));
+                        appender.append(new String(result, 0, length, StandardCharsets.UTF_8));
                     }
                     infl.end();
                 } catch (Exception e) {
