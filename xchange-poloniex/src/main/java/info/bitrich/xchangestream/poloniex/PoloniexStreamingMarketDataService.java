@@ -50,9 +50,9 @@ public class PoloniexStreamingMarketDataService implements StreamingMarketDataSe
         }
 
         String channel = PoloniexUtils.toPairString(currencyPair);
-        Observable<OrderBook> result = streamingService.subscribeChannel(channel)
+        return streamingService.subscribeChannel(channel)
                 .map(pubSubData -> {
-                    Date now = new Date();
+                    long now = System.currentTimeMillis();
                     for (int i = 0; i < pubSubData.arguments().size(); i++) {
                         JsonNode item = pubSubData.arguments().get(i);
                         String type = item.get("type").asText();
@@ -82,7 +82,6 @@ public class PoloniexStreamingMarketDataService implements StreamingMarketDataSe
                     }
                     return new OrderBook(now, MinMaxPriorityQueueUtils.toList(askQueue, asendingPriceComparator), MinMaxPriorityQueueUtils.toList(bidQueue, descendingPriceComparator));
                 });
-        return result;
     }
 
     @Override

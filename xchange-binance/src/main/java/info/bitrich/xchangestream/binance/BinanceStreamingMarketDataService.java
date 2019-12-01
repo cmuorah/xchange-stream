@@ -114,7 +114,7 @@ public class BinanceStreamingMarketDataService implements StreamingMarketDataSer
                 rawTrade.getQuantity(),
                 currencyPair,
                 rawTrade.getPrice(),
-                new Date(rawTrade.getTimestamp()),
+                rawTrade.getTimestamp(),
                 String.valueOf(rawTrade.getTradeId())
             ));
     }
@@ -270,14 +270,14 @@ public class BinanceStreamingMarketDataService implements StreamingMarketDataSer
                             null,
                             currencyPair,
                             key,
-                            depth.getEventTime(),
+                            depth.getEventTime().getTime(),
                             value)));
                     ob.asks.forEach((key, value) -> subscription.orderBook.update(new OrderBookUpdate(
                             OrderType.ASK,
                             null,
                             currencyPair,
                             key,
-                            depth.getEventTime(),
+                            depth.getEventTime().getTime(),
                             value)));
                     return subscription.orderBook;
                 });

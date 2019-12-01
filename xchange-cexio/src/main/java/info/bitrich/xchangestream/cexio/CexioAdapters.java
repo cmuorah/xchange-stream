@@ -92,8 +92,7 @@ public class CexioAdapters {
             }
             Double price = updatedQuantityPrice.get(0);
             Double quantity = updatedQuantityPrice.get(1);
-            LimitOrder orderForUpdatedQuantityPrice =
-                    new LimitOrder(orderType, quantity, currencyPair, id, timestamp, price);
+            LimitOrder orderForUpdatedQuantityPrice = new LimitOrder(orderType, quantity, currencyPair, id, timestamp.getTime(), price);
             orderBook.update(orderForUpdatedQuantityPrice);
         }
         return orderBook;

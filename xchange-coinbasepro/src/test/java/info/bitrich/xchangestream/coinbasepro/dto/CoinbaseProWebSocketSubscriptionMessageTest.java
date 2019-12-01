@@ -3,6 +3,8 @@ package info.bitrich.xchangestream.coinbasepro.dto;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jsoniter.JsonIterator;
+import com.jsoniter.output.JsonStream;
 import info.bitrich.xchangestream.core.ProductSubscription;
 import org.junit.Assert;
 import org.junit.Test;
@@ -20,10 +22,8 @@ public class CoinbaseProWebSocketSubscriptionMessageTest {
                 .addTrades(CurrencyPair.BTC_USD).addTicker(CurrencyPair.BTC_USD).build();
         CoinbaseProWebSocketSubscriptionMessage message = new CoinbaseProWebSocketSubscriptionMessage("subscribe", productSubscription, null);
 
-        final ObjectMapper mapper = new ObjectMapper();
-        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, true);
 
-        String serialized = mapper.writeValueAsString(message);
+        String serialized = JsonStream.serialize(message);
 
         Assert.assertEquals("{\"type\":\"subscribe\",\"channels\":[{\"name\":\"matches\",\"product_ids\":[\"BTC-USD\"]},{\"name\":\"ticker\",\"product_ids\":[\"BTC-USD\"]},{\"name\":\"level2\",\"product_ids\":[\"BTC-USD\"]}]}", serialized);
     }

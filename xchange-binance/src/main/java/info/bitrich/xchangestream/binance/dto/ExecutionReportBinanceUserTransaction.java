@@ -191,7 +191,7 @@ public class ExecutionReportBinanceUserTransaction extends ProductBinanceWebSock
             .originalAmount(lastExecutedQuantity)
             .currencyPair(currencyPair)
             .price(lastExecutedPrice)
-            .timestamp(getEventTime())
+            .timestamp(getEventTime().getTime())
             .id(Long.toString(tradeId))
             .orderId(Long.toString(orderId))
             .feeAmount(commissionAmount)

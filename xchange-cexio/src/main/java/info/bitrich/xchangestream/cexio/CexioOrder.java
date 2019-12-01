@@ -18,7 +18,7 @@ public class CexioOrder extends LimitOrder {
             Double limitPrice,
             Double fee,
             OrderStatus status) {
-        super(type, originalAmount, currencyPair, id, timestamp, limitPrice, null, null, fee, status);
+        super(type, originalAmount, currencyPair, id, timestamp.getTime(), limitPrice, null, null, fee, status);
         this.remainingAmount = null;
     }
 

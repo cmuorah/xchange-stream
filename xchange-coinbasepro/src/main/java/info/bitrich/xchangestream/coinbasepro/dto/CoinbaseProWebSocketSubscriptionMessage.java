@@ -1,78 +1,44 @@
 package info.bitrich.xchangestream.coinbasepro.dto;
 
+import com.jsoniter.annotation.JsonProperty;
+import info.bitrich.xchangestream.core.ProductSubscription;
+import net.openhft.chronicle.wire.AbstractMarshallable;
+import org.knowm.xchange.coinbasepro.dto.account.CoinbaseProWebsocketAuthData;
+import org.knowm.xchange.currency.CurrencyPair;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
-import net.openhft.chronicle.wire.AbstractMarshallable;
-import org.knowm.xchange.coinbasepro.dto.account.CoinbaseProWebsocketAuthData;
-import org.knowm.xchange.currency.CurrencyPair;
-
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-
-import info.bitrich.xchangestream.core.ProductSubscription;
-
 /**
  * CoinbasePro subscription message.
  */
 public class CoinbaseProWebSocketSubscriptionMessage extends AbstractMarshallable {
 
-    public static final String TYPE = "type";
-    public static final String CHANNELS = "channels";
-    public static final String PRODUCT_IDS = "product_ids";
-    public static final String NAME = "name";
+    private static final String TYPE = "type";
+    private static final String CHANNELS = "channels";
+    private static final String PRODUCT_IDS = "product_ids";
+    private static final String NAME = "name";
 
     // if authenticating
-    public static final String SIGNATURE = "signature";
-    public static final String KEY = "key";
-    public static final String PASSPHRASE = "passphrase";
-    public static final String TIMESTAMP = "timestamp";
-
-    static class CoinbaseProProductSubsctiption {
-        @JsonProperty(NAME)
-        private final String name;
-
-        @JsonProperty(PRODUCT_IDS)
-        private final String[] product_ids;
-
-        public CoinbaseProProductSubsctiption(String name, String[] product_ids, CoinbaseProWebsocketAuthData authData) {
-            this.name = name;
-            this.product_ids = product_ids;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public String[] getProductIds() {
-            return product_ids;
-        }
-    }
-
+    private static final String SIGNATURE = "signature";
+    private static final String KEY = "key";
+    private static final String PASSPHRASE = "passphrase";
+    private static final String TIMESTAMP = "timestamp";
     @JsonProperty(TYPE)
     private final String type;
-
     @JsonProperty(CHANNELS)
     private CoinbaseProProductSubsctiption[] channels;
-
-    @JsonInclude(JsonInclude.Include.NON_EMPTY)
-    @JsonProperty(SIGNATURE)
-    String signature;
-
-    @JsonInclude(JsonInclude.Include.NON_EMPTY)
-    @JsonProperty(KEY)
-    String key;
-
-    @JsonInclude(JsonInclude.Include.NON_EMPTY)
-    @JsonProperty(PASSPHRASE)
-    String passphrase;
-
-    @JsonInclude(JsonInclude.Include.NON_EMPTY)
-    @JsonProperty(TIMESTAMP)
-    String timestamp;
+    @JsonProperty(value = SIGNATURE, defaultValueToOmit = "null")
+    private String signature;
+    @JsonProperty(value = KEY, defaultValueToOmit = "null")
+    private String key;
+    @JsonProperty(value = PASSPHRASE, defaultValueToOmit = "null")
+    private String passphrase;
+    @JsonProperty(value = TIMESTAMP, defaultValueToOmit = "null")
+    private String timestamp;
 
     public CoinbaseProWebSocketSubscriptionMessage(String type, ProductSubscription product, CoinbaseProWebsocketAuthData authData) {
         this.type = type;
@@ -115,15 +81,15 @@ public class CoinbaseProWebSocketSubscriptionMessage extends AbstractMarshallabl
         pairs.put("level2", productSubscription.getOrderBook());
         pairs.put("ticker", productSubscription.getTicker());
         pairs.put("matches", productSubscription.getTrades());
-        if ( authData != null ) {
+        if (authData != null) {
             ArrayList<CurrencyPair> userCurrencies = new ArrayList<>();
             Stream.of(
                     productSubscription.getUserTrades().stream(),
                     productSubscription.getOrders().stream()
-                )
-                .flatMap(s -> s)
-                .distinct()
-                .forEach(userCurrencies::add);
+            )
+                    .flatMap(s -> s)
+                    .distinct()
+                    .forEach(userCurrencies::add);
             pairs.put("user", userCurrencies);
         }
 
@@ -138,11 +104,11 @@ public class CoinbaseProWebSocketSubscriptionMessage extends AbstractMarshallabl
 
         this.channels = channels.toArray(new CoinbaseProProductSubsctiption[channels.size()]);
 
-        if ( authData != null ) {
-	        this.key = authData.getKey();
-	        this.passphrase = authData.getPassphrase();
-	        this.signature = authData.getSignature();
-	        this.timestamp = String.valueOf(authData.getTimestamp());
+        if (authData != null) {
+            this.key = authData.getKey();
+            this.passphrase = authData.getPassphrase();
+            this.signature = authData.getSignature();
+            this.timestamp = String.valueOf(authData.getTimestamp());
         }
     }
 
@@ -152,5 +118,26 @@ public class CoinbaseProWebSocketSubscriptionMessage extends AbstractMarshallabl
 
     public CoinbaseProProductSubsctiption[] getChannels() {
         return channels;
+    }
+
+    static class CoinbaseProProductSubsctiption {
+        @JsonProperty(NAME)
+        private final String name;
+
+        @JsonProperty(PRODUCT_IDS)
+        private final String[] productIds;
+
+        CoinbaseProProductSubsctiption(String name, String[] productIds, CoinbaseProWebsocketAuthData authData) {
+            this.name = name;
+            this.productIds = productIds;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public String[] getProductIds() {
+            return productIds;
+        }
     }
 }

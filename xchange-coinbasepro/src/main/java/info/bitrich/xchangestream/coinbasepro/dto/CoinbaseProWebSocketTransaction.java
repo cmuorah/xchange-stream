@@ -240,13 +240,6 @@ public class CoinbaseProWebSocketTransaction extends AbstractMarshallable {
         return makerOrderId;
     }
 
-    /**
-     * @deprecated Use {@link #getTakerOrderId()}
-     */
-    @Deprecated
-    public String getTakenOrderId() {
-        return takerOrderId;
-    }
 
     public String getTakerOrderId() {
         return takerOrderId;
@@ -268,41 +261,4 @@ public class CoinbaseProWebSocketTransaction extends AbstractMarshallable {
         return profileId;
     }
 
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder("CoinbaseProWebSocketTransaction{");
-        sb.append("type='").append(type).append('\'');
-        sb.append(", orderId='").append(orderId).append('\'');
-        sb.append(", orderType='").append(orderType).append('\'');
-        sb.append(", size=").append(size);
-        sb.append(", remainingSize=").append(remainingSize);
-        sb.append(", price=").append(price);
-        sb.append(", bestBid=").append(bestBid);
-        sb.append(", bestAsk=").append(bestAsk);
-        sb.append(", lastSize=").append(lastSize);
-        sb.append(", volume24h=").append(volume24h);
-        sb.append(", open24h=").append(open24h);
-        sb.append(", low24h=").append(low24h);
-        sb.append(", high24h=").append(high24h);
-        sb.append(", side='").append(side).append('\'');
-        sb.append(", bids=").append(Arrays.deepToString(bids));
-        sb.append(", asks=").append(Arrays.deepToString(asks));
-        sb.append(", changes=").append(Arrays.deepToString(asks));
-        sb.append(", clientOid='").append(clientOid).append('\'');
-        sb.append(", productId='").append(productId).append('\'');
-        sb.append(", sequence=").append(sequence);
-        sb.append(", time='").append(time).append('\'');
-        sb.append(", reason='").append(reason).append('\'');
-        sb.append(", trade_id='").append(tradeId).append('\'');
-        if (userId != null)
-            sb.append(", userId='").append(userId).append('\'');
-        if (profileId != null)
-            sb.append(", profileId='").append(profileId).append('\'');
-        if (takerUserId != null)
-            sb.append(", takerUserId='").append(takerUserId).append('\'');
-        if (takerProfileId != null)
-            sb.append(", takerProfileId='").append(takerProfileId).append('\'');
-        sb.append('}');
-        return sb.toString();
-    }
 }

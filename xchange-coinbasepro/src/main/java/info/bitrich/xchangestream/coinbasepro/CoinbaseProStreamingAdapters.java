@@ -13,17 +13,25 @@ import org.slf4j.LoggerFactory;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+import java.time.format.TextStyle;
+import java.time.temporal.ChronoField;
+import java.time.temporal.TemporalField;
 import java.util.Date;
 import java.util.TimeZone;
 
 public class CoinbaseProStreamingAdapters {
 
     private static final Logger LOG = LoggerFactory.getLogger(CoinbaseProStreamingAdapters.class);
-    private static final ThreadLocal<SimpleDateFormat> formatter = ThreadLocal.withInitial(() -> {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
-        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-        return sdf;
-    });
+    private static final DateTimeFormatter formatter = new DateTimeFormatterBuilder()
+            .appendPattern("yyyy-MM-dd'T'HH:mm:ss")
+            .appendFraction(ChronoField.MICRO_OF_SECOND, 0, 9, true) // Nanoseconds = 0-9 digits of fractional second.
+            .appendLiteral('Z')
+            .toFormatter();
+
 
     /**
      * TODO this clearly isn't good enough. We need an initial snapshot that these
@@ -78,47 +86,20 @@ public class CoinbaseProStreamingAdapters {
         }
     }
 
-    public static Date parseDate(final String rawDate) {
+    public static Long parseDate(final String rawDate) {
 
-        String modified;
-        if (rawDate.length() > 23) {
-            modified = rawDate.substring(0, 23);
-        } else if (rawDate.endsWith("Z")) {
-            switch (rawDate.length()) {
-                case 20:
-                    modified = rawDate.substring(0, 19) + ".000";
-                    break;
-                case 22:
-                    modified = rawDate.substring(0, 21) + "00";
-                    break;
-                case 23:
-                    modified = rawDate.substring(0, 22) + "0";
-                    break;
-                default:
-                    modified = rawDate;
-                    break;
-            }
-        } else {
-            switch (rawDate.length()) {
-                case 19:
-                    modified = rawDate + ".000";
-                    break;
-                case 21:
-                    modified = rawDate + "00";
-                    break;
-                case 22:
-                    modified = rawDate + "0";
-                    break;
-                default:
-                    modified = rawDate;
-                    break;
-            }
-        }
         try {
-            return formatter.get().parse(modified);
-        } catch (ParseException e) {
-            LOG.warn("unable to parse rawDate={} modified={}", rawDate, modified, e);
+            return LocalDateTime.parse(rawDate, formatter).toInstant(ZoneOffset.UTC).toEpochMilli();
+        } catch (Exception e) {
+            LOG.warn("unable to parse rawDate={}", rawDate, e);
             return null;
         }
+    }
+
+    public static void main(String[] args) {
+        String s = "2014-11-07T08:19:28.464459Z";
+
+        System.out.println(formatter.format(LocalDateTime.now()));
+        System.out.println(LocalDateTime.parse(s, formatter).toInstant(ZoneOffset.UTC).toEpochMilli());
     }
 }

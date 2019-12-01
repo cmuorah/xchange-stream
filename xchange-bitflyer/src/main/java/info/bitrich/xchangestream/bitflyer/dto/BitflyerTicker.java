@@ -101,6 +101,6 @@ public class BitflyerTicker extends BitflyerMarketEvent {
 
     public Ticker toTicker() {
         return new Ticker.Builder().ask(bestAsk).bid(bestBid).volume(volume)
-                .timestamp(getDate()).currencyPair(getCurrencyPair()).build();
+                .timestamp(getDate().getTime()).currencyPair(getCurrencyPair()).build();
     }
 }

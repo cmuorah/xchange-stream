@@ -14,7 +14,6 @@ import org.knowm.xchange.dto.Order;
 import org.knowm.xchange.dto.account.Balance;
 import org.knowm.xchange.dto.trade.OpenOrders;
 import org.knowm.xchange.dto.trade.UserTrade;
-import org.knowm.xchange.utils.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -238,7 +237,7 @@ class BitfinexStreamingAdapters {
                 .orderId(Long.toString(authTrade.getOrderId()))
                 .originalAmount(Math.abs(authTrade.getExecAmount()))
                 .price(authTrade.getExecPrice())
-                .timestamp(DateUtils.fromMillisUtc(authTrade.getMtsCreate()))
+                .timestamp(authTrade.getMtsCreate())
                 .type(Math.signum(authTrade.getExecAmount()) > 0.0 ? BID : ASK)
                 .build();
     }

@@ -14,7 +14,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -40,7 +39,7 @@ public class OkCoinStreamingMarketDataServiceTest {
 
         when(okCoinStreamingService.subscribeChannel(any())).thenReturn(Observable.just(jsonNode));
 
-        Date timestamp = new Date(1484602135246L);
+        long timestamp = 1484602135246L;
 
         List<LimitOrder> bids = new ArrayList<>();
         bids.add(new LimitOrder(Order.OrderType.BID, Double.parseDouble("0.922"), CurrencyPair.BTC_USD, null, timestamp, Double.parseDouble("819.9")));

@@ -17,7 +17,6 @@ import org.mockito.MockitoAnnotations;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -70,8 +69,8 @@ public class CoinmateStreamingMarketDataServiceTest {
 
         when(streamingService.subscribeChannel(eq("trades-BTC_CZK"), eq("new_trades"))).thenReturn(Observable.just(trade));
 
-        Trade expected1 = new Trade(null, new Double("0.08233888"), CurrencyPair.BTC_CZK, new Double("855.29"), new Date(1484863030522L), null);
-        Trade expected2 = new Trade(null, new Double("0.00200428"), CurrencyPair.BTC_CZK, new Double("855.13"), new Date(1484863028887L), null);
+        Trade expected1 = new Trade(null, new Double("0.08233888"), CurrencyPair.BTC_CZK, new Double("855.29"), 1484863030522L, null);
+        Trade expected2 = new Trade(null, new Double("0.00200428"), CurrencyPair.BTC_CZK, new Double("855.13"), 1484863028887L, null);
 
         TestObserver<Trade> test = marketDataService.getTrades(CurrencyPair.BTC_CZK).test();
 

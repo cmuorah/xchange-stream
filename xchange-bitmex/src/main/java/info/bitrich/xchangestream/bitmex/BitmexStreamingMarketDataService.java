@@ -59,7 +59,7 @@ public class BitmexStreamingMarketDataService implements StreamingMarketDataServ
                 orderbook = orderbooks.get(instrument);
                 //ignore updates until first "partial"
                 if (orderbook == null) {
-                    return new OrderBook(new Date(), Collections.emptyList(), Collections.emptyList());
+                    return new OrderBook(System.currentTimeMillis(), Collections.emptyList(), Collections.emptyList());
                 }
                 BitmexLimitOrder[] levels = s.toBitmexOrderbookLevels();
                 orderbook.updateLevels(levels, action);

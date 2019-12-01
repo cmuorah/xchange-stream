@@ -17,7 +17,6 @@ import org.knowm.xchange.exceptions.NotAvailableFromExchangeException;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -64,7 +63,7 @@ public class BankeraStreamingMarketDataService implements StreamingMarketDataSer
                         .id("-1")
                         .price(new Double(t.get("data").get("price").asText()))
                         .originalAmount(new Double(t.get("data").get("amount").asText()))
-                        .timestamp(new Date(t.get("data").get("time").asLong()))
+                        .timestamp(t.get("data").get("time").asLong())
                         .type(t.get("data").get("side").asText().equals("SELL") ? Order.OrderType.ASK : Order.OrderType.BID)
                         .build()
                 );

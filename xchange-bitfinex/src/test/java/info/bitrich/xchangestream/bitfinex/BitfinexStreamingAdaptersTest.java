@@ -56,7 +56,7 @@ public class BitfinexStreamingAdaptersTest {
         assertEquals(new Double("0.004"), adaptedOrder.getOriginalAmount());
         assertEquals(new Double("0.000"), adaptedOrder.getRemainingAmount());
         assertEquals(OrderStatus.FILLED, adaptedOrder.getStatus());
-        assertEquals(new Date(1548674205259L).getTime(), adaptedOrder.getTimestamp().getTime());
+        assertEquals(1548674205259L, adaptedOrder.getTimestamp().longValue());
     }
 
     @Test
@@ -98,7 +98,7 @@ public class BitfinexStreamingAdaptersTest {
         assertEquals(new Double("0.004"), adaptedOrder.getOriginalAmount());
         assertEquals(new Double("0.000"), adaptedOrder.getRemainingAmount());
         assertEquals(OrderStatus.FILLED, adaptedOrder.getStatus());
-        assertEquals(new Date(1548674205259L).getTime(), adaptedOrder.getTimestamp().getTime());
+        assertEquals(1548674205259L, adaptedOrder.getTimestamp().longValue());
     }
 
     @Test
@@ -135,7 +135,7 @@ public class BitfinexStreamingAdaptersTest {
         assertEquals(new Double("0.004"), adaptedOrder.getOriginalAmount());
         assertEquals(new Double("0.004"), adaptedOrder.getRemainingAmount());
         assertEquals(OrderStatus.NEW, adaptedOrder.getStatus());
-        assertEquals(new Date(1548674205259L).getTime(), adaptedOrder.getTimestamp().getTime());
+        assertEquals(1548674205259L, adaptedOrder.getTimestamp().longValue());
     }
 
 
@@ -176,7 +176,7 @@ public class BitfinexStreamingAdaptersTest {
         //assertEquals(Collections.singleton(BitfinexOrderFlags.MARGIN), adaptedOrder.getOrderFlags());
 
         assertEquals(OrderStatus.CANCELED, adaptedOrder.getStatus());
-        assertEquals(new Date(1548674205259L).getTime(), adaptedOrder.getTimestamp().getTime());
+        assertEquals(1548674205259L, adaptedOrder.getTimestamp().longValue());
     }
 
     @Test
@@ -216,7 +216,7 @@ public class BitfinexStreamingAdaptersTest {
         //assertEquals(Collections.singleton(BitfinexOrderFlags.MARGIN), adaptedOrder.getOrderFlags());
 
         assertEquals(OrderStatus.PARTIALLY_FILLED, adaptedOrder.getStatus());
-        assertEquals(new Date(1548674205259L).getTime(), adaptedOrder.getTimestamp().getTime());
+        assertEquals(1548674205259L, adaptedOrder.getTimestamp().longValue());
     }
 
 
@@ -254,7 +254,7 @@ public class BitfinexStreamingAdaptersTest {
         assertEquals(new Double("0.000"), adaptedOrder.getRemainingAmount());
         assertEquals(Collections.emptySet(), adaptedOrder.getOrderFlags());
         assertEquals(OrderStatus.FILLED, adaptedOrder.getStatus());
-        assertEquals(new Date(1548674205259L).getTime(), adaptedOrder.getTimestamp().getTime());
+        assertEquals(1548674205259L, adaptedOrder.getTimestamp().longValue());
     }
 
     @Test
@@ -280,7 +280,7 @@ public class BitfinexStreamingAdaptersTest {
         assertEquals("21895093123", adapted.getOrderId());
         assertEquals(new Double("0.00341448"), adapted.getOriginalAmount());
         assertEquals(new Double("3495.4"), adapted.getPrice());
-        assertEquals(new Date(1548674247684L).getTime(), adapted.getTimestamp().getTime());
+        assertEquals(1548674247684L, adapted.getTimestamp().longValue());
         assertEquals(OrderType.BID, adapted.getType());
     }
 
@@ -308,7 +308,7 @@ public class BitfinexStreamingAdaptersTest {
         assertEquals("21895093123", adapted.getOrderId());
         assertEquals(new Double("0.00341448"), adapted.getOriginalAmount());
         assertEquals(new Double("3495.4"), adapted.getPrice());
-        assertEquals(new Date(1548674247684L).getTime(), adapted.getTimestamp().getTime());
+        assertEquals(1548674247684L, adapted.getTimestamp().longValue());
         assertEquals(OrderType.ASK, adapted.getType());
     }
 }

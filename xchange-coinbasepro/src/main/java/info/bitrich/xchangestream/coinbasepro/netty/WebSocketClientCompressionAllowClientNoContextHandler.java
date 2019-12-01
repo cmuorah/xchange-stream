@@ -14,8 +14,7 @@ import static io.netty.handler.codec.http.websocketx.extensions.compression.PerM
 @ChannelHandler.Sharable
 public final class WebSocketClientCompressionAllowClientNoContextHandler extends WebSocketClientExtensionHandler {
 
-    public static final WebSocketClientCompressionAllowClientNoContextHandler INSTANCE =
-            new WebSocketClientCompressionAllowClientNoContextHandler();
+    public static final WebSocketClientCompressionAllowClientNoContextHandler INSTANCE = new WebSocketClientCompressionAllowClientNoContextHandler();
 
     private WebSocketClientCompressionAllowClientNoContextHandler() {
         super(new PerMessageDeflateClientExtensionHandshaker(6, ZlibCodecFactory.isSupportingWindowSizeAndMemLevel(), MAX_WINDOW_SIZE, true, false),

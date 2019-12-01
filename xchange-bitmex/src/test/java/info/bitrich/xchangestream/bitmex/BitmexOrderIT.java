@@ -97,7 +97,7 @@ public class BitmexOrderIT {
                         new Double(size),
                         xbtUsd,
                         clOrdId,
-                        new Date(),
+                        System.currentTimeMillis(),
                         price);
         String orderId = tradeService.placeLimitOrder(limitOrder);
         LOG.info("Order was placed with id = {}", orderId);

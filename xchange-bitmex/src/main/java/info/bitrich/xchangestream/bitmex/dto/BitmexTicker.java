@@ -57,7 +57,7 @@ public class BitmexTicker extends BitmexMarketDataEvent {
         return new Ticker.Builder()
                 .ask(askPrice).bidSize(bidSize)
                 .bid(bidPrice).askSize(askSize)
-                .timestamp(getDate()).currencyPair(getCurrencyPair())
+                .timestamp(getDate().getTime()).currencyPair(getCurrencyPair())
                 .build();
     }
 }

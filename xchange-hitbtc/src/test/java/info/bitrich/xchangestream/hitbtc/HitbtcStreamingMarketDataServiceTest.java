@@ -18,7 +18,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -74,9 +73,9 @@ public class HitbtcStreamingMarketDataServiceTest {
 
         when(streamingService.subscribeChannel(eq("trades-BTCUSD"))).thenReturn(Observable.just(objectMapper.readTree(trades)));
 
-        Trade expected1 = new Trade(Order.OrderType.BID, Double.parseDouble("0.057"), CurrencyPair.BTC_USD, Double.parseDouble("0.054656"), new Date(1508430822821L), "54469456");
-        Trade expected2 = new Trade(Order.OrderType.BID, Double.parseDouble("0.092"), CurrencyPair.BTC_USD, Double.parseDouble("0.054656"), new Date(1508430828754L), "54469497");
-        Trade expected3 = new Trade(Order.OrderType.BID, Double.parseDouble("0.002"), CurrencyPair.BTC_USD, Double.parseDouble("0.054669"), new Date(1508430853288L), "54469697");
+        Trade expected1 = new Trade(Order.OrderType.BID, Double.parseDouble("0.057"), CurrencyPair.BTC_USD, Double.parseDouble("0.054656"), 1508430822821L, "54469456");
+        Trade expected2 = new Trade(Order.OrderType.BID, Double.parseDouble("0.092"), CurrencyPair.BTC_USD, Double.parseDouble("0.054656"), 1508430828754L, "54469497");
+        Trade expected3 = new Trade(Order.OrderType.BID, Double.parseDouble("0.002"), CurrencyPair.BTC_USD, Double.parseDouble("0.054669"), 1508430853288L, "54469697");
 
         // Call get trades observable
         TestObserver<Trade> test = marketDataService.getTrades(CurrencyPair.BTC_USD).test();
@@ -110,7 +109,7 @@ public class HitbtcStreamingMarketDataServiceTest {
                         .currencyPair(CurrencyPair.BTC_USD).last(Double.parseDouble("0.054463"))
                         .bid(Double.parseDouble("0.054463")).ask(Double.parseDouble("0.054464"))
                         .high(Double.parseDouble("0.057559")).low(Double.parseDouble("0.053615"))
-                        .volume(Double.parseDouble("33068.346")).timestamp(new Date(1508427944941L))
+                        .volume(Double.parseDouble("33068.346")).timestamp(1508427944941L)
                         .build();
 
         // Call get ticker observable

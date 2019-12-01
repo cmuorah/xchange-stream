@@ -5,8 +5,6 @@ import org.knowm.xchange.bitfinex.service.BitfinexAdapters;
 import org.knowm.xchange.bitfinex.v1.dto.marketdata.BitfinexDepth;
 import org.knowm.xchange.dto.marketdata.OrderBook;
 
-import java.util.Date;
-
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.knowm.xchange.currency.CurrencyPair.BTC_USD;
 
@@ -23,6 +21,6 @@ public class BitfinexOrderbookTest {
 
         // What is the time now... after order books created?
         assertThat("The timestamp should be a value less than now, but was: " + orderBook.getTimeStamp(),
-                !orderBook.getTimeStamp().after(new Date()));
+                !(orderBook.getTimeStamp() > System.currentTimeMillis()));
     }
 }

@@ -15,13 +15,11 @@ import io.netty.handler.codec.http.websocketx.WebSocketClientHandshaker;
 import io.netty.handler.codec.http.websocketx.extensions.WebSocketClientExtensionHandler;
 import io.reactivex.Observable;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
-import net.openhft.chronicle.wire.WireType;
 import org.knowm.xchange.coinbasepro.dto.account.CoinbaseProWebsocketAuthData;
 import org.knowm.xchange.currency.CurrencyPair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.util.Map;
 import java.util.function.Supplier;
 
@@ -93,16 +91,15 @@ public class CoinbaseProStreamingService extends JsonNettyStreamingService<Any> 
     }
 
     @Override
-    public String getSubscribeMessage(String channelName, Object... args) throws IOException {
+    public String getSubscribeMessage(String channelName, Object... args) {
         CoinbaseProWebSocketSubscriptionMessage subscribeMessage = new CoinbaseProWebSocketSubscriptionMessage(SUBSCRIBE, product, authData.get());
         return JsonStream.serialize(subscribeMessage);
     }
 
     @Override
-    public String getUnsubscribeMessage(String channelName) throws IOException {
-        CoinbaseProWebSocketSubscriptionMessage subscribeMessage =
-                new CoinbaseProWebSocketSubscriptionMessage(UNSUBSCRIBE, new String[]{"level2", "matches", "ticker"}, authData.get());
-        return WireType.JSON.asString(subscribeMessage);
+    public String getUnsubscribeMessage(String channelName) {
+        CoinbaseProWebSocketSubscriptionMessage subscribeMessage = new CoinbaseProWebSocketSubscriptionMessage(UNSUBSCRIBE, new String[]{"level2", "matches", "ticker"}, authData.get());
+        return JsonStream.serialize(subscribeMessage);
     }
 
     @Override
