@@ -24,7 +24,7 @@ public class CexioOrder extends LimitOrder {
 
     public CexioOrder(
             CurrencyPair currencyPair, String id, OrderStatus status, Double remainingAmount) {
-        this(null, currencyPair, null, id, null, null, null, status);
+        this(null, currencyPair, null, id, new Date(), null, null, status);
         this.remainingAmount = remainingAmount;
     }
 
