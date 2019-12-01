@@ -117,11 +117,9 @@ public class CoinbaseProWebSocketTransaction extends AbstractMarshallable {
 
     public OrderBook toOrderBook(SortedMap<Double, Double> bids, SortedMap<Double, Double> asks, int maxDepth, CurrencyPair currencyPair) {
         // For efficiency, we go straight to XChange format
-        List<LimitOrder> gdaxOrderBookBids = coinbaseProOrderBookChanges("buy", OrderType.BID, currencyPair, changes != null ? changes : this.bids,
-                bids, maxDepth);
-        List<LimitOrder> gdaxOrderBookAsks = coinbaseProOrderBookChanges("sell", OrderType.ASK, currencyPair, changes != null ? changes : this.asks,
-                asks, maxDepth);
-        return new OrderBook(time == null ? null : CoinbaseProStreamingAdapters.parseDate(time), gdaxOrderBookAsks, gdaxOrderBookBids, false);
+        List<LimitOrder> gdaxOrderBookBids = coinbaseProOrderBookChanges("buy", OrderType.BID, currencyPair, changes != null ? changes : this.bids, bids, maxDepth);
+        List<LimitOrder> gdaxOrderBookAsks = coinbaseProOrderBookChanges("sell", OrderType.ASK, currencyPair, changes != null ? changes : this.asks, asks, maxDepth);
+        return new OrderBook(CoinbaseProStreamingAdapters.parseDate(time), gdaxOrderBookAsks, gdaxOrderBookBids, false);
     }
 
     public CoinbaseProProductTicker toCoinbaseProProductTicker() {
