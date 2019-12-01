@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
+import net.openhft.chronicle.wire.AbstractMarshallable;
 import org.knowm.xchange.coinbasepro.dto.account.CoinbaseProWebsocketAuthData;
 import org.knowm.xchange.currency.CurrencyPair;
 
@@ -17,7 +18,7 @@ import info.bitrich.xchangestream.core.ProductSubscription;
 /**
  * CoinbasePro subscription message.
  */
-public class CoinbaseProWebSocketSubscriptionMessage {
+public class CoinbaseProWebSocketSubscriptionMessage extends AbstractMarshallable {
 
     public static final String TYPE = "type";
     public static final String CHANNELS = "channels";
@@ -35,11 +36,11 @@ public class CoinbaseProWebSocketSubscriptionMessage {
         private final String name;
 
         @JsonProperty(PRODUCT_IDS)
-        private final String[] productIds;
+        private final String[] product_ids;
 
-        public CoinbaseProProductSubsctiption(String name, String[] productIds, CoinbaseProWebsocketAuthData authData) {
+        public CoinbaseProProductSubsctiption(String name, String[] product_ids, CoinbaseProWebsocketAuthData authData) {
             this.name = name;
-            this.productIds = productIds;
+            this.product_ids = product_ids;
         }
 
         public String getName() {
@@ -47,7 +48,7 @@ public class CoinbaseProWebSocketSubscriptionMessage {
         }
 
         public String[] getProductIds() {
-            return productIds;
+            return product_ids;
         }
     }
 

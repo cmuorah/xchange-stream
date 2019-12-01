@@ -1,7 +1,9 @@
 package info.bitrich.xchangestream.coinbasepro.dto;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.jsoniter.annotation.JsonProperty;
+import com.jsoniter.fuzzy.MaybeStringDoubleDecoder;
 import info.bitrich.xchangestream.coinbasepro.CoinbaseProStreamingAdapters;
+import net.openhft.chronicle.wire.AbstractMarshallable;
 import org.knowm.xchange.coinbasepro.dto.marketdata.CoinbaseProProductStats;
 import org.knowm.xchange.coinbasepro.dto.marketdata.CoinbaseProProductTicker;
 import org.knowm.xchange.coinbasepro.dto.marketdata.CoinbaseProTrade;
@@ -20,98 +22,61 @@ import java.util.stream.Stream;
 /**
  * Domain object mapping a CoinbasePro web socket message.
  */
-public class CoinbaseProWebSocketTransaction {
-    private final String type;
-    private final String orderId;
-    private final String orderType;
-    private final Double size;
-    private final Double remainingSize;
-    private final Double price;
-    private final Double bestBid;
-    private final Double bestAsk;
-    private final Double lastSize;
-    private final Double volume24h;
-    private final Double open24h;
-    private final Double low24h;
-    private final Double high24h;
-    private final String side;
-    private final String[][] bids;
-    private final String[][] asks;
-    private final String[][] changes;
-    private final String clientOid;
-    private final String productId;
-    private final long sequence;
-    private final String time;
-    private final String reason;
-    private final long tradeId;
-    private final String makerOrderId;
-    private final String takerOrderId;
+public class CoinbaseProWebSocketTransaction extends AbstractMarshallable {
+    private String type;
+    @JsonProperty("order_id")
+    private String orderId;
+    @JsonProperty("order_type")
+    private String orderType;
+    @JsonProperty(decoder = MaybeStringDoubleDecoder.class)
+    private Double size;
+    @JsonProperty(value = "remaining_size", decoder = MaybeStringDoubleDecoder.class)
+    private Double remainingSize;
+    @JsonProperty(decoder = MaybeStringDoubleDecoder.class)
+    private Double price;
+    @JsonProperty(value = "best_bid", decoder = MaybeStringDoubleDecoder.class)
+    private Double bestBid;
+    @JsonProperty(value = "best_ask", decoder = MaybeStringDoubleDecoder.class)
+    private Double bestAsk;
+    @JsonProperty(value = "last_size", decoder = MaybeStringDoubleDecoder.class)
+    private Double lastSize;
+    @JsonProperty(value = "volume_24h", decoder = MaybeStringDoubleDecoder.class)
+    private Double volume24h;
+    @JsonProperty(value = "open_24h", decoder = MaybeStringDoubleDecoder.class)
+    private Double open24h;
+    @JsonProperty(value = "low_24h", decoder = MaybeStringDoubleDecoder.class)
+    private Double low24h;
+    @JsonProperty(value = "high_24h", decoder = MaybeStringDoubleDecoder.class)
+    private Double high24h;
+    private String side;
+    private String[][] bids;
+    private String[][] asks;
+    private String[][] changes;
+    @JsonProperty("client_oid")
+    private String clientOid;
+    @JsonProperty("product_id")
+    private String productId;
+    private long sequence;
+    private String time;
+    private String reason;
+    @JsonProperty("trade_id")
+    private long tradeId;
+    @JsonProperty("maker_order_id")
+    private String makerOrderId;
+    @JsonProperty("taker_order_id")
+    private String takerOrderId;
+    @JsonProperty("taker_user_id")
+    private String takerUserId;
+    @JsonProperty("user_id")
+    private String userId;
+    @JsonProperty("taker_profile_id")
+    private String takerProfileId;
+    @JsonProperty("profile_id")
+    private String profileId;
 
-    private final String takerUserId;
-    private final String userId;
-    private final String takerProfileId;
-    private final String profileId;
 
-    public CoinbaseProWebSocketTransaction(
-            @JsonProperty("type") String type,
-            @JsonProperty("order_id") String orderId,
-            @JsonProperty("order_type") String orderType,
-            @JsonProperty("size") Double size,
-            @JsonProperty("remaining_size") Double remainingSize,
-            @JsonProperty("price") Double price,
-            @JsonProperty("best_bid") Double bestBid,
-            @JsonProperty("best_ask") Double bestAsk,
-            @JsonProperty("last_size") Double lastSize,
-            @JsonProperty("volume_24h") Double volume24h,
-            @JsonProperty("open_24h") Double open24h,
-            @JsonProperty("low_24h") Double low24h,
-            @JsonProperty("high_24h") Double high24h,
-            @JsonProperty("side") String side,
-            @JsonProperty("bids") String[][] bids,
-            @JsonProperty("asks") String[][] asks,
-            @JsonProperty("changes") String[][] changes,
-            @JsonProperty("client_oid") String clientOid,
-            @JsonProperty("product_id") String productId,
-            @JsonProperty("sequence") long sequence,
-            @JsonProperty("time") String time,
-            @JsonProperty("reason") String reason,
-            @JsonProperty("trade_id") long tradeId,
-            @JsonProperty("maker_order_id") String makerOrderId,
-            @JsonProperty("taker_order_id") String takerOrderId,
-            @JsonProperty("taker_user_id") String takerUserId,
-            @JsonProperty("user_id") String userId,
-            @JsonProperty("taker_profile_id") String takerProfileId,
-            @JsonProperty("profile_id") String profileId) {
 
-        this.remainingSize = remainingSize;
-        this.reason = reason;
-        this.tradeId = tradeId;
-        this.makerOrderId = makerOrderId;
-        this.takerOrderId = takerOrderId;
-        this.type = type;
-        this.orderId = orderId;
-        this.orderType = orderType;
-        this.size = size;
-        this.price = price;
-        this.bestBid = bestBid;
-        this.bestAsk = bestAsk;
-        this.lastSize = lastSize;
-        this.volume24h = volume24h;
-        this.high24h = high24h;
-        this.low24h = low24h;
-        this.open24h = open24h;
-        this.side = side;
-        this.bids = bids;
-        this.asks = asks;
-        this.changes = changes;
-        this.clientOid = clientOid;
-        this.productId = productId;
-        this.sequence = sequence;
-        this.time = time;
-        this.takerUserId = takerUserId;
-        this.userId = userId;
-        this.takerProfileId = takerProfileId;
-        this.profileId = profileId;
+    public CoinbaseProWebSocketTransaction() {
     }
 
     private List<LimitOrder> coinbaseProOrderBookChanges(String side, OrderType orderType, CurrencyPair currencyPair, String[][] changes, SortedMap<Double, Double> sideEntries,
@@ -305,7 +270,7 @@ public class CoinbaseProWebSocketTransaction {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("CoinbaseProWebSocketTransaction{");
+        StringBuilder sb = new StringBuilder("CoinbaseProWebSocketTransaction{");
         sb.append("type='").append(type).append('\'');
         sb.append(", orderId='").append(orderId).append('\'');
         sb.append(", orderType='").append(orderType).append('\'');

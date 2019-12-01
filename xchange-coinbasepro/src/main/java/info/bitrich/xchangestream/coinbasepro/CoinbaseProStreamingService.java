@@ -1,19 +1,21 @@
 package info.bitrich.xchangestream.coinbasepro;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+
+import com.jsoniter.JsonIterator;
+import com.jsoniter.any.Any;
+import com.jsoniter.output.JsonStream;
 import info.bitrich.xchangestream.coinbasepro.dto.CoinbaseProWebSocketSubscriptionMessage;
 import info.bitrich.xchangestream.coinbasepro.dto.CoinbaseProWebSocketTransaction;
 import info.bitrich.xchangestream.coinbasepro.netty.WebSocketClientCompressionAllowClientNoContextHandler;
 import info.bitrich.xchangestream.core.ProductSubscription;
 import info.bitrich.xchangestream.service.netty.JsonNettyStreamingService;
-import info.bitrich.xchangestream.service.netty.StreamingObjectMapperHelper;
 import info.bitrich.xchangestream.service.netty.WebSocketClientHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.websocketx.WebSocketClientHandshaker;
 import io.netty.handler.codec.http.websocketx.extensions.WebSocketClientExtensionHandler;
 import io.reactivex.Observable;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import net.openhft.chronicle.wire.WireType;
 import org.knowm.xchange.coinbasepro.dto.account.CoinbaseProWebsocketAuthData;
 import org.knowm.xchange.currency.CurrencyPair;
 import org.slf4j.Logger;
@@ -25,19 +27,18 @@ import java.util.function.Supplier;
 
 import static io.netty.util.internal.StringUtil.isNullOrEmpty;
 
-public class CoinbaseProStreamingService extends JsonNettyStreamingService<JsonNode> {
+public class CoinbaseProStreamingService extends JsonNettyStreamingService<Any> {
     private static final Logger LOG = LoggerFactory.getLogger(CoinbaseProStreamingService.class);
     private static final String SUBSCRIBE = "subscribe";
     private static final String UNSUBSCRIBE = "unsubscribe";
     private static final String SHARE_CHANNEL_NAME = "ALL";
-    private final ObjectMapper objectMapper = StreamingObjectMapperHelper.getObjectMapper();
-    private final Map<String, Observable<JsonNode>> subscriptions = new Object2ObjectOpenHashMap<>();
+    private final Map<String, Observable<Any>> subscriptions = new Object2ObjectOpenHashMap<>();
     private final Supplier<CoinbaseProWebsocketAuthData> authData;
     private ProductSubscription product = null;
     private WebSocketClientHandler.WebSocketMessageHandler channelInactiveHandler = null;
 
     public CoinbaseProStreamingService(String apiUrl, Supplier<CoinbaseProWebsocketAuthData> authData) {
-        super(apiUrl, Integer.MAX_VALUE, StreamingObjectMapperHelper.SERIALIZER, StreamingObjectMapperHelper.PARSER);
+        super(apiUrl, Integer.MAX_VALUE, JsonStream::serialize, JsonIterator::deserialize);
         this.authData = authData;
     }
 
@@ -58,7 +59,7 @@ public class CoinbaseProStreamingService extends JsonNettyStreamingService<JsonN
      * @return an Observable of json objects coming from the exchange.
      */
     @Override
-    public Observable<JsonNode> subscribeChannel(String channelName, Object... args) {
+    public Observable<Any> subscribeChannel(String channelName, Object... args) {
         channelName = SHARE_CHANNEL_NAME;
 
         if (!channels.containsKey(channelName) && !subscriptions.containsKey(channelName)) {
@@ -76,9 +77,8 @@ public class CoinbaseProStreamingService extends JsonNettyStreamingService<JsonN
      */
     public Observable<CoinbaseProWebSocketTransaction> getRawWebSocketTransactions(CurrencyPair currencyPair, boolean filterChannelName) {
         String channelName = currencyPair.base.toString() + "-" + currencyPair.counter.toString();
-        final ObjectMapper mapper = StreamingObjectMapperHelper.getObjectMapper();
         return subscribeChannel(channelName)
-                .map(s -> mapper.treeToValue(s, CoinbaseProWebSocketTransaction.class))
+                .map(s -> s.as(CoinbaseProWebSocketTransaction.class))
                 .filter(t -> channelName.equals(t.getProductId()))
                 .filter(t -> !isNullOrEmpty(t.getType()));
     }
@@ -88,25 +88,25 @@ public class CoinbaseProStreamingService extends JsonNettyStreamingService<JsonN
     }
 
     @Override
-    protected String getChannelNameFromMessage(JsonNode message) {
+    protected String getChannelNameFromMessage(Any message) {
         return SHARE_CHANNEL_NAME;
     }
 
     @Override
     public String getSubscribeMessage(String channelName, Object... args) throws IOException {
         CoinbaseProWebSocketSubscriptionMessage subscribeMessage = new CoinbaseProWebSocketSubscriptionMessage(SUBSCRIBE, product, authData.get());
-        return objectMapper.writeValueAsString(subscribeMessage);
+        return JsonStream.serialize(subscribeMessage);
     }
 
     @Override
     public String getUnsubscribeMessage(String channelName) throws IOException {
         CoinbaseProWebSocketSubscriptionMessage subscribeMessage =
                 new CoinbaseProWebSocketSubscriptionMessage(UNSUBSCRIBE, new String[]{"level2", "matches", "ticker"}, authData.get());
-        return objectMapper.writeValueAsString(subscribeMessage);
+        return WireType.JSON.asString(subscribeMessage);
     }
 
     @Override
-    protected void handleMessage(JsonNode message) {
+    protected void handleMessage(Any message) {
         super.handleMessage(message);
     }
 

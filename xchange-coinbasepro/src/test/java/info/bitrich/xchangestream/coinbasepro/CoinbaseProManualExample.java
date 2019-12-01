@@ -12,12 +12,12 @@ import info.bitrich.xchangestream.core.StreamingExchangeFactory;
 public class CoinbaseProManualExample {
     private static final Logger LOG = LoggerFactory.getLogger(CoinbaseProManualExample.class);
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
 
         // Far safer than temporarily adding these to code that might get committed to VCS
-        String apiKey = System.getProperty("coinbasepro-api-key");
-        String apiSecret = System.getProperty("coinbasepro-api-secret");
-        String apiPassphrase = System.getProperty("coinbasepro-api-passphrase");
+        String apiKey = System.getenv("coinbasepro-api-key");
+        String apiSecret = System.getenv("coinbasepro-api-secret");
+        String apiPassphrase = System.getenv("coinbasepro-api-passphrase");
 
         ProductSubscription productSubscription = ProductSubscription.create()
                 .addTicker(CurrencyPair.ETH_USD)
@@ -74,6 +74,7 @@ public class CoinbaseProManualExample {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+        Thread.currentThread().join();
 
         exchange.disconnect().blockingAwait();
     }
